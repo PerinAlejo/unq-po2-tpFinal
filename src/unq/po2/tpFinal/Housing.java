@@ -12,6 +12,7 @@ public class Housing {
 	private HousingStayDetails stayDetails;
 	private List<PaymentMethod> paymentMethods;
 	private PriceCalculatorInterface priceCalculator;
+	
 	public Housing(HousingType housingType, float area, Address address, List<Service> services, int capacity,
 			List<Picture> pictures, HousingStayDetails stayDetails, List<PaymentMethod> paymentMethods,
 			PriceCalculatorInterface priceCalculator) {	
@@ -28,6 +29,23 @@ public class Housing {
 	
 	public double getPrice(DateRange range) {
 		return this.priceCalculator.getPrice(range);
+	}
+
+	public int getCapacity() {
+		return this.capacity;
+	}
+
+	public Address getAddress() {
+		// TODO Auto-generated method stub
+		return this.address;
+	}
+
+	public boolean isLocatedIn(City city) {
+		return this.address.getCity().equals(city);
+	}
+
+	public boolean isAvailable(DateRange dateRange) {
+		return true;
 	}
 	
 }
