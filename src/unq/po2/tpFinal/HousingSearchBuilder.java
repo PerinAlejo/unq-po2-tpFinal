@@ -11,7 +11,7 @@ public class HousingSearchBuilder {
 
 	//Parametrtos Obligatorios de Busqueda
 	public HousingSearchBuilder(City city, DateRange dateRange) {
-		this.filterList = Arrays.asList(new CityFilter(city), new DateRangeFilter(dateRange));
+		this.filterList = new ArrayList<>(Arrays.asList(new CityFilter(city), new DateRangeFilter(dateRange)));
 		this.dateRange = dateRange;
 	}
 	
