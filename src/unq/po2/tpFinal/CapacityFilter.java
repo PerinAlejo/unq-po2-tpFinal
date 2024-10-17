@@ -13,7 +13,7 @@ public class CapacityFilter implements SearchFilter {
 
 	@Override
 	public List<Housing> filter(List<Housing> housingList) {
-		return housingList.stream().filter(housing -> housing.getCapacity() >= this.capacity).collect(Collectors.toList());
+		return housingList.stream().filter(housing -> housing.getCapacity() >= this.capacity).toList();
 		
 	}
 	
