@@ -1,6 +1,6 @@
 package unq.po2.tpFinal;
 
-public interface Rank {
+public interface Ranker {
 	//define un objeto rankeador para un rankeable
-	void rankEntity(Rankable entity, int score);
+	void rank(Rankeable rankeable, int rating);
 }

@@ -2,7 +2,7 @@ package unq.po2.tpFinal;
 
 import java.util.List;
 
-public class Housing implements Rankable{
+public class Housing implements Rankeable{
 	private HousingType housingType;
 	private float area;
 	private Address address;
@@ -12,8 +12,8 @@ public class Housing implements Rankable{
 	private HousingStayDetails stayDetails;
 	private List<PaymentMethod> paymentMethods;
 	private PriceCalculatorInterface priceCalculator;
-	private int score;
-	private int totalReviews;
+	private int totalRatings;
+    private int numberOfRatings;
 	
 	public Housing(HousingType housingType, float area, Address address, List<Service> services, int capacity,
 			List<Picture> pictures, HousingStayDetails stayDetails, List<PaymentMethod> paymentMethods,
@@ -51,10 +51,14 @@ public class Housing implements Rankable{
 	}
 	
 	@Override
-	public double calculateRanking(int newScore) {
-		this.score += newScore;
-		this.totalReviews++;
-		return (double) this.score / this.totalReviews;
-	}
+    public void addRating(int rating) {
+        totalRatings += rating;
+        numberOfRatings++;
+    }
+
+    @Override
+    public double getAverageRating() {
+        return numberOfRatings > 0 ? (double) totalRatings / numberOfRatings : 0.0;
+    }
 	
 }
