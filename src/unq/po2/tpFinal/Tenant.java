@@ -1,8 +1,8 @@
 package unq.po2.tpFinal;
 
 public class Tenant extends User implements Rankeable, Ranker {
-	private int totalRatings;
-	private int numberOfRatings;
+	private int totalRatings = 0;
+	private int numberOfRatings = 0;
 
 	public Tenant(String fullName, String email, String phoneNumber) {
 		super(fullName, email, phoneNumber);
@@ -15,8 +15,8 @@ public class Tenant extends User implements Rankeable, Ranker {
 
 	@Override
 	public void addRating(int rating) {
-		this.totalRatings += rating;
-		this.numberOfRatings++;
+		totalRatings += rating;
+		numberOfRatings++;
 	}
 	
 	@Override
