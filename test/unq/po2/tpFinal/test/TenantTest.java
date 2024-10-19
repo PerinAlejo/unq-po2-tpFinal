@@ -1,13 +1,12 @@
 package unq.po2.tpFinal.test;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 
-import unq.po2.tpFinal.Housing;
-import unq.po2.tpFinal.Tenant;
-import org.mockito.Mockito;
+import unq.po2.tpFinal.*;
 
 public class TenantTest {
 	private Tenant tenant;
@@ -15,7 +14,7 @@ public class TenantTest {
 
     @BeforeEach
     public void setUp() {
-    	mockHousing = Mockito.mock(Housing.class);
+    	mockHousing = mock(Housing.class);
     	tenant = new Tenant("Mr. Pruebbas", "prueba@hotmail.com", "1133445566");
     }
 

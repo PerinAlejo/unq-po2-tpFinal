@@ -10,19 +10,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import unq.po2.tpFinal.Address;
-import unq.po2.tpFinal.City;
-import unq.po2.tpFinal.Country;
-import unq.po2.tpFinal.DateRange;
-import unq.po2.tpFinal.Housing;
-import unq.po2.tpFinal.HousingType;
-import unq.po2.tpFinal.Service;
-import unq.po2.tpFinal.Picture;
-import unq.po2.tpFinal.PaymentMethod;
-import unq.po2.tpFinal.PriceCalculatorInterface;
-import unq.po2.tpFinal.PriceForRange;
-import unq.po2.tpFinal.PriceCalculatorImpl;
-import unq.po2.tpFinal.HousingStayDetails;
+import unq.po2.tpFinal.*;
 
 public class HousingTest {
 	private Housing housing;

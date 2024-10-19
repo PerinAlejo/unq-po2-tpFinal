@@ -1,5 +1,7 @@
 package unq.po2.tpFinal;
 
+import unq.po2.tpFinal.*;
+
 public class Owner extends User implements Rankeable, Ranker {
 	private int totalRatings;
 	private int numberOfRatings;
