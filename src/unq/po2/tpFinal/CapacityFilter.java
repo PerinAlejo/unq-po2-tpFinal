@@ -1,6 +1,7 @@
 package unq.po2.tpFinal;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class CapacityFilter implements SearchFilter {
 
@@ -13,6 +14,8 @@ public class CapacityFilter implements SearchFilter {
 	@Override
 	public List<Housing> filter(List<Housing> housingList) {
 		return housingList.stream().filter(housing -> housing.getCapacity() >= this.capacity).toList();
+		
 	}
+	
 
 }
