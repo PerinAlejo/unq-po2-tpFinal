@@ -45,4 +45,8 @@ public class Booking {
 	public City getCity() {
 		return this.housing.getCity();
 	}
+
+	public boolean isBookedOn(LocalDate date) {
+		return this.range.contains(date);
+	}
 }

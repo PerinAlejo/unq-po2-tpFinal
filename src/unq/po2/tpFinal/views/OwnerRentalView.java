@@ -38,6 +38,7 @@ public class OwnerRentalView {
         return this.owner
             .getRentals()
             .stream()
+            // Como hacer para chequear que Owner es Tenant? Guardar como user?
             .filter(rental -> rental.getTenant().equals(this.owner))
             .map(rental -> rental.getHousing())
             .collect(Collectors.toList());

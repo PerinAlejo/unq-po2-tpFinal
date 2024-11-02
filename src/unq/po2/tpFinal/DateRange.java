@@ -31,4 +31,8 @@ public class DateRange {
     public boolean startsAfter(LocalDate date) {
     	return this.start.isAfter(date);
     }
+
+	public boolean contains(LocalDate date) {
+		return start.isBefore(date) && end.isAfter(date);
+	}
 }
