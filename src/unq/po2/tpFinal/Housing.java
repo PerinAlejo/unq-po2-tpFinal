@@ -12,10 +12,11 @@ public class Housing {
 	private HousingStayDetails stayDetails;
 	private List<PaymentMethod> paymentMethods;
 	private PriceCalculatorInterface priceCalculator;
+	private Owner owner;
 	
 	public Housing(HousingType housingType, float area, Address address, List<Service> services, int capacity,
 			List<Picture> pictures, HousingStayDetails stayDetails, List<PaymentMethod> paymentMethods,
-			PriceCalculatorInterface priceCalculator) {	
+			PriceCalculatorInterface priceCalculator, Owner owner) {	
 		this.housingType = housingType;
 		this.area = area;
 		this.address = address;
@@ -25,6 +26,7 @@ public class Housing {
 		this.stayDetails = stayDetails;
 		this.paymentMethods = paymentMethods;
 		this.priceCalculator = priceCalculator;
+		this.owner = owner;
 	}
 	
 	public double getPrice(DateRange range) {
@@ -35,8 +37,7 @@ public class Housing {
 		return this.capacity;
 	}
 
-	public Address getAddress() {
-		// TODO Auto-generated method stub
+	public Address getAddress() {		
 		return this.address;
 	}
 
@@ -47,5 +48,8 @@ public class Housing {
 	public boolean isAvailable(DateRange dateRange) {
 		return true;
 	}
-	
+
+    public Owner getOwner() {        
+        return this.owner;
+    }
 }
