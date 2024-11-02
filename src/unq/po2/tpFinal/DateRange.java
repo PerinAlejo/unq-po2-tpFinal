@@ -27,4 +27,12 @@ public class DateRange {
         }
         return overlapEnd.toEpochDay() - overlapStart.toEpochDay() + 1;
     }
+    
+    public boolean startsAfter(LocalDate date) {
+    	return this.start.isAfter(date);
+    }
+
+	public boolean contains(LocalDate date) {
+		return start.isBefore(date) && end.isAfter(date);
+	}
 }
