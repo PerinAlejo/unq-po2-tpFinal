@@ -1,13 +1,14 @@
 package unq.po2.tpFinal;
 
+import java.util.List;
+
 public class Rental {
     private Housing housing;
-
     private DateRange range;
     private Tenant tenant;
-    private Owner owner;
+    private Owner owner;	
     
-    public Rental(unq.po2.tpFinal.Housing housing, DateRange range, Tenant tenant, Owner owner) {
+    public Rental(Housing housing, DateRange range, Tenant tenant, Owner owner) {
         this.housing = housing;
         this.range = range;
         this.tenant = tenant;
@@ -25,4 +26,8 @@ public class Rental {
     public User getOwner(){
         return this.owner;
     } 
+    
+    public void checkOut(List<Ranking> rankings) {
+    	rankings.forEach(ranking -> ranking.getRanker().rank(ranking));
+    }
 }

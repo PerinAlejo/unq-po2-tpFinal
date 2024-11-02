@@ -5,13 +5,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Owner extends User implements Rankeable, Ranker {
-	private int totalRatings;
-	private int numberOfRatings;
+	private List<Ranking> rankings;
 	private List<Rental> rentals;
 
 	public Owner(String fullName, String email, String phoneNumber, LocalDateTime createdOn) {
 		super(fullName, email, phoneNumber, createdOn); 
 		rentals = new ArrayList<Rental>();
+		rankings = new ArrayList<Ranking>();
 	}
 
 	public void addRental(Rental rental){
@@ -22,19 +22,19 @@ public class Owner extends User implements Rankeable, Ranker {
 		return this.rentals;
 	}
 
-	@Override
-	public void rank(Rankeable rankeable, int rating) {
-		rankeable.addRating(rating);
-	}
 
 	@Override
-	public void addRating(int rating) {
-		this.totalRatings += rating;
-		this.numberOfRatings++;
+	public void addRanking(Ranking ranking) {
+		this.rankings.add(ranking);
 	}
-	
+ 
 	@Override
-	public double getAverageRating() {
-		return numberOfRatings > 0 ? (double) totalRatings / numberOfRatings : 0.0;
+	public List<Ranking> getRankings(){
+    	return this.rankings;
+    }
+
+	@Override
+	public void rank(Ranking ranking) {
+		ranking.getRanked().addRanking(ranking);
 	}
 }

@@ -7,5 +7,14 @@ public class CategoryScore {
     public CategoryScore(Category category, int score) {
         this.category = category;
         this.score = score;
-    }
+    }    
+    
+    public Category getCategory() {
+		return category;
+	}
+
+	public int getScore() {
+		return score;
+	}
+
 }

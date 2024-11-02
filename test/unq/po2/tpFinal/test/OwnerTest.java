@@ -8,6 +8,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDateTime;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -19,7 +21,7 @@ public class OwnerTest {
 
     @BeforeEach
     public void setUp() {
-    	owner = new Owner("Mr. Pruebbas", "prueba@hotmail.com", "1133445566");
+    	owner = new Owner("Mr. Pruebbas", "prueba@hotmail.com", "1133445566", LocalDateTime.now());
     	mockTenant = mock(Tenant.class);
     }
 

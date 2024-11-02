@@ -1,4 +1,6 @@
-package unq.po2.tpFinal;
+package unq.po2.tpFinal.views;
+
+import unq.po2.tpFinal.Category;
 
 public class CategoryAverage {
     private double average;
@@ -8,4 +10,13 @@ public class CategoryAverage {
         this.average = average;
         this.category = category;
     }
+
+	public double getAverage() {
+		return average;
+	}
+
+	public Category getCategory() {
+		return category;
+	}    
+    
 }

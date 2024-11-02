@@ -1,8 +1,9 @@
 package unq.po2.tpFinal;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class Housing implements Rankeable{
+public class Housing implements Rankeable {
 	private HousingType housingType;
 	private float area;
 	private Address address;
@@ -12,8 +13,7 @@ public class Housing implements Rankeable{
 	private HousingStayDetails stayDetails;
 	private List<PaymentMethod> paymentMethods;
 	private PriceCalculatorInterface priceCalculator;
-	private int totalRatings;
-    private int numberOfRatings;
+	private List<Ranking> rankings;
 	private Owner owner;
 	
 	public Housing(HousingType housingType, float area, Address address, List<Service> services, int capacity,
@@ -29,6 +29,7 @@ public class Housing implements Rankeable{
 		this.paymentMethods = paymentMethods;
 		this.priceCalculator = priceCalculator;
 		this.owner = owner;
+		this.rankings = new ArrayList<Ranking>();
 	}
 	
 	public double getPrice(DateRange range) {
@@ -50,19 +51,17 @@ public class Housing implements Rankeable{
 	public boolean isAvailable(DateRange dateRange) {
 		return true;
 	}
-	
-	@Override
-    public void addRating(int rating) {
-        totalRatings += rating;
-        numberOfRatings++;
-    }
-
-    @Override
-    public double getAverageRating() {
-        return numberOfRatings > 0 ? (double) totalRatings / numberOfRatings : 0.0;
-    }
 
     public Owner getOwner() {        
         return this.owner;
     }
+    
+    public List<Ranking> getRankings(){
+    	return this.rankings;
+    }
+
+	@Override
+	public void addRanking(Ranking ranking) {
+		this.rankings.add(ranking);
+	}
 }

@@ -3,6 +3,8 @@ package unq.po2.tpFinal.test;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import java.time.LocalDateTime;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 
@@ -15,7 +17,7 @@ public class TenantTest {
     @BeforeEach
     public void setUp() {
     	mockHousing = mock(Housing.class);
-    	tenant = new Tenant("Mr. Pruebbas", "prueba@hotmail.com", "1133445566");
+    	tenant = new Tenant("Mr. Pruebbas", "prueba@hotmail.com", "1133445566", LocalDateTime.now());
     }
 
     @Test

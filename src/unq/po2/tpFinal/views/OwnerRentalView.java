@@ -1,13 +1,16 @@
-package unq.po2.tpFinal;
+package unq.po2.tpFinal.views;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class OwnerRentalStats {    
+import unq.po2.tpFinal.Housing;
+import unq.po2.tpFinal.Owner;
+
+public class OwnerRentalView {    
     private Owner owner;
     private Housing housing;
 
-    public OwnerRentalStats(Owner owner, Housing currentHousing){
+    public OwnerRentalView(Owner owner, Housing currentHousing){
         this.owner = owner;
         this.housing =currentHousing;
     }
@@ -30,6 +33,7 @@ public class OwnerRentalStats {
     public long getTotalTimesHasRentedHousing(){
         return this.getRentedHousings().size();
     }
+    
     public List<Housing> getRentedHousings(){
         return this.owner
             .getRentals()
