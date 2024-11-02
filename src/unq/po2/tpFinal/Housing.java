@@ -45,7 +45,7 @@ public class Housing implements Rankeable {
 	}
 
 	public boolean isLocatedIn(City city) {
-		return this.address.getCity().equals(city);
+		return this.getCity().equals(city);
 	}
 
 	public boolean isAvailable(DateRange dateRange) {
@@ -63,5 +63,9 @@ public class Housing implements Rankeable {
 	@Override
 	public void addRanking(Ranking ranking) {
 		this.rankings.add(ranking);
+	}
+	
+	public City getCity() {
+		return this.address.getCity();
 	}
 }

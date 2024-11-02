@@ -5,7 +5,7 @@ import java.util.List;
 
 public class Tenant extends User implements Rankeable, Ranker {
 	private List<Ranking> rankings;
-	public Tenant(String fullName, String email, String phoneNumber, LocalDateTime createdOn, RankingProvider rankingProvider) {
+	public Tenant(String fullName, String email, String phoneNumber, LocalDateTime createdOn) {
 		super(fullName, email, phoneNumber, createdOn);
 		rankings = new ArrayList<Ranking>();
 	}	
@@ -23,5 +23,10 @@ public class Tenant extends User implements Rankeable, Ranker {
 	@Override
 	public void rank(Ranking ranking) {
 		ranking.getRanked().addRanking(ranking);
+	}
+	
+	public void book(Housing housing, DateRange range, PaymentMethod paymentMethod) {
+		Booking booking = new Booking(housing, this, range, paymentMethod);
+		housing.getOwner().accept(booking);
 	}
 }
