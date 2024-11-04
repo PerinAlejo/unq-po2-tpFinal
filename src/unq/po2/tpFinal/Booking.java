@@ -25,8 +25,7 @@ public class Booking {
         return this.housing;
     }    
 
-
-    public User getOwner(){
+    public Owner getOwner(){
         return this.housing.getOwner();
     } 
     
@@ -48,5 +47,10 @@ public class Booking {
 
 	public boolean isBookedOn(LocalDate date) {
 		return this.range.contains(date);
+	}
+	
+	public void cancelBook() {
+		this.tenant.addCancelationFee(this.housing.getCancelationFee());
+		this.getOwner().cancelBook(this);
 	}
 }

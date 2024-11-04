@@ -26,7 +26,6 @@ public class Owner extends User implements Rankeable, Ranker {
 		return this.rentals;
 	}
 
-
 	@Override
 	public void addRanking(Ranking ranking) {
 		this.rankings.add(ranking);
@@ -46,5 +45,14 @@ public class Owner extends User implements Rankeable, Ranker {
 		if(this.bookingAcceptanceStrategy.isAcceptable(booking)) {
 			this.bookingObservers.forEach(observer -> observer.notifyBookingAccepted(booking));
 		}
+	}
+	
+	public void removalRental(Booking booking) {
+		this.rentals.remove(booking);
+	}
+	
+	public void cancelBook(Booking booking) {
+		this.removalRental(booking);
+		
 	}
 }

@@ -26,6 +26,7 @@ public class BookingSystem implements BookingAcceptedObserver {
 	public void cancelBooking(Booking booking) {
 		this.bookings.remove(booking);
 		this.bookingCancelledObservers.forEach(observer -> observer.notifyBookingCancelled(booking));
+		booking.cancelBook();
 	}
 	
 	public List<Booking> getAllBookings(Tenant tenant){

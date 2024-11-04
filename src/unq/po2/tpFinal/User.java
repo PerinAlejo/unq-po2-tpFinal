@@ -31,4 +31,5 @@ public abstract class User {
     public LocalDateTime getCreatedOn() {
         return createdOn;
     }
+    
 }

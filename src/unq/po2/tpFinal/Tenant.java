@@ -5,9 +5,12 @@ import java.util.List;
 
 public class Tenant extends User implements Rankeable, Ranker {
 	private List<Ranking> rankings;
+	private double cancelationFee;
+	
 	public Tenant(String fullName, String email, String phoneNumber, LocalDateTime createdOn) {
 		super(fullName, email, phoneNumber, createdOn);
 		rankings = new ArrayList<Ranking>();
+		this.cancelationFee = 0;
 	}	
 
 	@Override
@@ -25,8 +28,13 @@ public class Tenant extends User implements Rankeable, Ranker {
 		ranking.getRanked().addRanking(ranking);
 	}
 	
+	public void addCancelationFee(double cancelationFee) {
+		this.cancelationFee += cancelationFee;
+	}
+	
 	public void book(Housing housing, DateRange range, PaymentMethod paymentMethod) {
 		Booking booking = new Booking(housing, this, range, paymentMethod);
 		housing.getOwner().accept(booking);
 	}
+	
 }

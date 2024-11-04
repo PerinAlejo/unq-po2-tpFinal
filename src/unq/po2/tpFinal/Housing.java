@@ -15,10 +15,11 @@ public class Housing implements Rankeable {
 	private PriceCalculatorInterface priceCalculator;
 	private List<Ranking> rankings;
 	private Owner owner;
+	private CancellationPolicy cancellationPolicy;
 	
 	public Housing(HousingType housingType, float area, Address address, List<Service> services, int capacity,
 			List<Picture> pictures, HousingStayDetails stayDetails, List<PaymentMethod> paymentMethods,
-			PriceCalculatorInterface priceCalculator, Owner owner) {	
+			PriceCalculatorInterface priceCalculator, Owner owner, CancellationPolicy cancellationPolicy) {	
 		this.housingType = housingType;
 		this.area = area;
 		this.address = address;
@@ -30,6 +31,7 @@ public class Housing implements Rankeable {
 		this.priceCalculator = priceCalculator;
 		this.owner = owner;
 		this.rankings = new ArrayList<Ranking>();
+		this.cancellationPolicy = cancellationPolicy;
 	}
 	
 	public double getPrice(DateRange range) {
@@ -67,5 +69,9 @@ public class Housing implements Rankeable {
 	
 	public City getCity() {
 		return this.address.getCity();
+	}
+
+	public double getCancelationFee() {
+		return this.cancellationPolicy.getCancellationFee();
 	}
 }
