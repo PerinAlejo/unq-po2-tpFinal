@@ -50,7 +50,7 @@ public class Booking {
 	}
 	
 	public void cancelBook() {
-		this.tenant.addCancelationFee(this.housing.getCancelationFee());
+		this.tenant.addCancelationFee(this.housing.getCancelationFee(this.range));
 		this.getOwner().cancelBook(this);
 	}
 }

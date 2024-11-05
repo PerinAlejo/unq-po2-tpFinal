@@ -71,7 +71,7 @@ public class Housing implements Rankeable {
 		return this.address.getCity();
 	}
 
-	public double getCancelationFee() {
-		return this.cancellationPolicy.getCancellationFee();
+	public double getCancelationFee(DateRange range) {
+		return this.cancellationPolicy.getCancellationFee(range);
 	}
 }

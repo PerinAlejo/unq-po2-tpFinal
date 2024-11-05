@@ -1,7 +1,17 @@
 package unq.po2.tpFinal;
 
-public interface CancellationPolicy {
+public abstract class CancellationPolicy {
 
-	public double getCancellationFee();
+	private Housing housing;
+		
+	public CancellationPolicy(Housing housing) {
+		this.housing = housing;
+	}
+	
+	public Housing getHousing() {
+		return this.housing;
+	}
+
+	public abstract double getCancellationFee(DateRange range);
 	
 }
