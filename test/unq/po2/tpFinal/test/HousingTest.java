@@ -37,7 +37,7 @@ public class HousingTest {
         priceForRangeList.add(priceForRange3);
         PriceCalculatorInterface priceCalculator = new PriceCalculatorImpl(priceForRangeList);
 
-        housing = new Housing(housingType, area, address, services, capacity, pictures, stayDetails, paymentMethods, priceCalculator);
+        housing = new Housing(housingType, area, address, services, capacity, pictures, stayDetails, paymentMethods, priceCalculator, null);
     }
 
     @Test

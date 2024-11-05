@@ -1,28 +1,58 @@
 package unq.po2.tpFinal;
 
-import unq.po2.tpFinal.*;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Owner extends User implements Rankeable, Ranker {
-	private int totalRatings;
-	private int numberOfRatings;
+	private List<Ranking> rankings;
+	private List<Booking> rentals;
+	private BookingAcceptanceStrategy bookingAcceptanceStrategy;
+	private List<BookingAcceptedObserver> bookingObservers;
 
-	public Owner(String fullName, String email, String phoneNumber) {
-		super(fullName, email, phoneNumber); 
+	public Owner(String fullName, String email, String phoneNumber, LocalDateTime createdOn, BookingAcceptanceStrategy bookingAcceptanceStrategy,List<BookingAcceptedObserver> bookingObservers) {
+		super(fullName, email, phoneNumber, createdOn); 
+		rentals = new ArrayList<Booking>();
+		rankings = new ArrayList<Ranking>();
+		this.bookingAcceptanceStrategy = bookingAcceptanceStrategy;
+		this.bookingObservers = bookingObservers;
 	}
 
-	@Override
-	public void rank(Rankeable rankeable, int rating) {
-		rankeable.addRating(rating);
-	}
-
-	@Override
-	public void addRating(int rating) {
-		this.totalRatings += rating;
-		this.numberOfRatings++;
+	public void addRental(Booking rental){
+		this.rentals.add(rental);
 	}
 	
+	public List<Booking> getRentals(){
+		return this.rentals;
+	}
+
 	@Override
-	public double getAverageRating() {
-		return numberOfRatings > 0 ? (double) totalRatings / numberOfRatings : 0.0;
+	public void addRanking(Ranking ranking) {
+		this.rankings.add(ranking);
+	}
+ 
+	@Override
+	public List<Ranking> getRankings(){
+    	return this.rankings;
+    }
+
+	@Override
+	public void rank(Ranking ranking) {
+		ranking.getRanked().addRanking(ranking);
+	}
+
+	public void accept(Booking booking) {
+		if(this.bookingAcceptanceStrategy.isAcceptable(booking)) {
+			this.bookingObservers.forEach(observer -> observer.notifyBookingAccepted(booking));
+		}
+	}
+	
+	public void removalRental(Booking booking) {
+		this.rentals.remove(booking);
+	}
+	
+	public void cancelBook(Booking booking) {
+		this.removalRental(booking);
+		
 	}
 }

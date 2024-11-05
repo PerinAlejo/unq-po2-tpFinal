@@ -1,27 +1,40 @@
 package unq.po2.tpFinal;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Tenant extends User implements Rankeable, Ranker {
-	private int totalRatings = 0;
-	private int numberOfRatings = 0;
+	private List<Ranking> rankings;
+	private double cancelationFee;
+	
+	public Tenant(String fullName, String email, String phoneNumber, LocalDateTime createdOn) {
+		super(fullName, email, phoneNumber, createdOn);
+		rankings = new ArrayList<Ranking>();
+		this.cancelationFee = 0;
+	}	
 
-	public Tenant(String fullName, String email, String phoneNumber) {
-		super(fullName, email, phoneNumber);
+	@Override
+	public void addRanking(Ranking ranking) {
+		rankings.add(ranking);
+	}
+
+	@Override
+	public List<Ranking> getRankings() {
+		return rankings;
+	}
+
+	@Override
+	public void rank(Ranking ranking) {
+		ranking.getRanked().addRanking(ranking);
 	}
 	
-	@Override
-	public void rank(Rankeable rankeable, int rating) {
-		rankeable.addRating(rating);
-	}
-
-	@Override
-	public void addRating(int rating) {
-		totalRatings += rating;
-		numberOfRatings++;
+	public void addCancelationFee(double cancelationFee) {
+		this.cancelationFee += cancelationFee;
 	}
 	
-	@Override
-	public double getAverageRating() {
-		return numberOfRatings > 0 ? (double) totalRatings / numberOfRatings : 0.0;
+	public void book(Housing housing, DateRange range, PaymentMethod paymentMethod) {
+		Booking booking = new Booking(housing, this, range, paymentMethod);
+		housing.getOwner().accept(booking);
 	}
-
+	
 }
