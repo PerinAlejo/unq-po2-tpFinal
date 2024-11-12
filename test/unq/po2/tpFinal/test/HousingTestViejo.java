@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 
 import unq.po2.tpFinal.*;
 
-public class HousingTest {
+public class HousingTestViejo {
 	private Housing housing;
 
     @BeforeEach

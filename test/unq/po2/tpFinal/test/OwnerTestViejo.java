@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test;
 
 import unq.po2.tpFinal.*;
 
-public class OwnerTest {
+public class OwnerTestViejo {
 	private Owner owner;
 	private Tenant mockTenant;
 
