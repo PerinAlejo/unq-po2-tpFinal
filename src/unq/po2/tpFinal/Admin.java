@@ -19,6 +19,16 @@ public class Admin {
 	private Set<Housing> housings;
 	
 	
+	
+	public Admin(Categories categories, HousingTypes housingTypes, Services services, BookingSystem bookingSystem,
+			Set<Housing> housings) {
+		this.categories = categories;
+		this.housingTypes = housingTypes;
+		this.services = services;
+		this.bookingSystem = bookingSystem;
+		this.housings = housings;
+	}
+
 	public void addCategory(Category category) {
 		this.categories.add(category);
 	}
@@ -27,7 +37,6 @@ public class Admin {
 	public void addHousingType(HousingType housing) {
 		this.housingTypes.add(housing);
 	}
-	
 	
 //	● Servicios que pueden tener los inmuebles (gas, wi-fi, etc) que serán
 //	seleccionadas por el propietario que posteriormente realice el alta de
@@ -40,6 +49,9 @@ public class Admin {
 		return this.services.getAll();
 	}
 	
+	public void addHousing(Housing housing) {
+		this.housings.add(housing);
+	}
 	
 	public List<Tenant> getTopTenTenants(){
 		return this.bookingSystem
@@ -61,7 +73,11 @@ public class Admin {
 	}
 	
 	public double occupationRate() {
-		return housings.size() / this.busyHousings().size();
+	    Set<Housing> busyHousings = this.busyHousings();
+	    if (housings.isEmpty()) {
+	        return 0.0; // Evitar división por cero, devuelve 0 si no hay inmuebles
+	    }
+	    return (double) busyHousings.size() / housings.size(); // Calcular la tasa de ocupación
 	}
 	
 	private Set<Housing> busyHousings(){

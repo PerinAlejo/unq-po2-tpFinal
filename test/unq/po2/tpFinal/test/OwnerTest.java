@@ -1,57 +1,113 @@
 package unq.po2.tpFinal.test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.time.LocalDateTime;
-
+import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import unq.po2.tpFinal.*;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
 public class OwnerTest {
-	private Owner owner;
-	private Tenant mockTenant;
+
+    private Owner owner;
+    private Booking mockBooking;
+    private BookingAcceptanceStrategy mockAcceptanceStrategy;
+    private List<BookingAcceptedObserver> mockObservers;
 
     @BeforeEach
     public void setUp() {
-    	owner = new Owner("Mr. Pruebbas", "prueba@hotmail.com", "1133445566", LocalDateTime.now());
-    	mockTenant = mock(Tenant.class);
+        // Inicializar mocks
+        mockAcceptanceStrategy = mock(BookingAcceptanceStrategy.class);
+        mockObservers = new ArrayList<>();
+        mockBooking = mock(Booking.class);
+        
+        // Crear una instancia de Owner
+        owner = new Owner("Jane Doe", "jane@example.com", "0987654321", LocalDateTime.now(), mockAcceptanceStrategy, mockObservers);
     }
 
     @Test
-    public void testAddRatingToUser() {
-    	owner.addRating(5);
-    	owner.addRating(3);
-        assertEquals(4.0, owner.getAverageRating());
+    public void testAddRental() {
+        owner.addRental(mockBooking);
+        List<Booking> rentals = owner.getRentals();
+        
+        assertEquals(1, rentals.size());
+        assertTrue(rentals.contains(mockBooking));
     }
 
     @Test
-    public void testGetAverageRatingWithNoRatings() {
-        assertEquals(0, owner.getAverageRating());
+    public void testGetRentals() {
+        owner.addRental(mockBooking);
+        List<Booking> rentals = owner.getRentals();
+        
+        assertEquals(1, rentals.size());
+        assertEquals(mockBooking, rentals.get(0));
     }
-    
+
     @Test
-    public void testRankMethodWithMockTenant() {
-        //defino el comportamiento del mock para cuando se llame a addRating y getAverageRating
-        doNothing().when(mockTenant).addRating(anyInt());
-        when(mockTenant.getAverageRating()).thenReturn(4.0);
+    public void testAddRanking() {
+        Ranking mockRanking = mock(Ranking.class);
+        owner.addRanking(mockRanking);
+        
+        List<Ranking> rankings = owner.getRankings();
+        assertEquals(1, rankings.size());
+        assertTrue(rankings.contains(mockRanking));
+    }
 
-        //el propietario usa el metodo rank para calificar el mockeado
-        owner.rank(mockTenant, 5);
-        owner.rank(mockTenant, 3);
+    @Test
+    public void testGetRankings() {
+        Ranking mockRanking = mock(Ranking.class);
+        owner.addRanking(mockRanking);
+        
+        List<Ranking> rankings = owner.getRankings();
+        assertEquals(1, rankings.size());
+        assertEquals(mockRanking, rankings.get(0));
+    }
 
-        //verifico que el metodo addRating se haya llamado dos veces al mock con los valores correctos
-        verify(mockTenant, times(1)).addRating(5);
-        verify(mockTenant, times(1)).addRating(3);
+    @Test
+    public void testRank() {
+        Ranking mockRanking = mock(Ranking.class);
+        when(mockRanking.getRanked()).thenReturn(owner);
+        
+        owner.rank(mockRanking);
+        
+        List<Ranking> rankings = owner.getRankings();
+        assertEquals(1, rankings.size());
+        assertEquals(mockRanking, rankings.get(0));
+    }
 
-        //verifico que el promedio de calificaciones del mock sea el esperado
-        assertEquals(4.0, mockTenant.getAverageRating(), 0.01);
+    @Test
+    public void testAcceptBooking() {
+        // Simular el comportamiento de la estrategia de aceptación
+        when(mockAcceptanceStrategy.isAcceptable(mockBooking)).thenReturn(true);
+        
+        // Crear un mock para el observer
+        BookingAcceptedObserver mockObserver = mock(BookingAcceptedObserver.class);
+        mockObservers.add(mockObserver);
+        
+        // Llamar al método accept
+        owner.accept(mockBooking);
+        
+        // Verificar que el método notifyBookingAccepted fue llamado
+        verify(mockObserver).notifyBookingAccepted(mockBooking);
+    }
+
+    @Test
+    public void testAcceptBookingNotAccepted() {
+        // Simular el comportamiento de la estrategia de aceptación
+        when(mockAcceptanceStrategy.isAcceptable(mockBooking)).thenReturn(false);
+        
+        // Crear un mock para el observer
+        BookingAcceptedObserver mockObserver = mock(BookingAcceptedObserver.class);
+        mockObservers.add(mockObserver);
+        
+        // Llamar al método accept
+        owner.accept(mockBooking);
+        
+        // Verificar que el método notifyBookingAccepted NO fue llamado
+        verify(mockObserver, never()).notifyBookingAccepted(mockBooking);
     }
 }
