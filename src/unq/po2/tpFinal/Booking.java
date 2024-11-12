@@ -27,7 +27,11 @@ public class Booking {
 
     public Owner getOwner(){
         return this.housing.getOwner();
-    } 
+    }
+    
+    public DateRange getRange() {
+    	return this.range;
+    }
     
     public void checkOut(List<Ranking> rankings) {
     	rankings.forEach(ranking -> ranking.getRanker().rank(ranking));
@@ -52,5 +56,9 @@ public class Booking {
 	public void cancelBook() {
 		this.tenant.addCancelationFee(this.housing.getCancelationFee(this.range));
 		this.getOwner().cancelBook(this);
+	}
+	
+	public void acceptBook() {
+		this.getOwner().addRental(this);
 	}
 }

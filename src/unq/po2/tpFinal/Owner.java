@@ -42,9 +42,7 @@ public class Owner extends User implements Rankeable, Ranker {
 	}
 
 	public void accept(Booking booking) {
-		if(this.bookingAcceptanceStrategy.isAcceptable(booking)) {
-			this.bookingObservers.forEach(observer -> observer.notifyBookingAccepted(booking));
-		}
+		this.bookingObservers.forEach(observer -> observer.notifyBookingAccepted(booking));
 	}
 	
 	public void removalRental(Booking booking) {
