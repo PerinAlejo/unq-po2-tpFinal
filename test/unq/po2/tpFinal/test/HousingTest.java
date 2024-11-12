@@ -1,56 +1,106 @@
 package unq.po2.tpFinal.test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
+import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import unq.po2.tpFinal.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class HousingTest {
-	private Housing housing;
+
+    private Housing housing;
+    private HousingType mockHousingType;
+    private Address mockAddress;
+    private List<Service> mockServices;
+    private List<Picture> mockPictures;
+    private HousingStayDetails mockStayDetails;
+    private List<PaymentMethod> mockPaymentMethods;
+    private PriceCalculatorInterface mockPriceCalculator;
+    private Owner mockOwner;
 
     @BeforeEach
     public void setUp() {
-        HousingType housingType = HousingType.Apartment;
-        float area = 75.0f;
-        Address address = new Address(new Country("Argentina"), new City("Quilmes"), "Quilmes Oeste");
-        List<Service> services = new ArrayList<>();
-        int capacity = 4;
-        List<Picture> pictures = new ArrayList<>();
-        HousingStayDetails stayDetails = new HousingStayDetails(LocalDateTime.of(2023, 1, 1, 0, 0), LocalDateTime.of(2023, 1, 10, 23, 59));
-        List<PaymentMethod> paymentMethods = new ArrayList<>();
-        DateRange range1 = new DateRange(LocalDate.of(2023, 1, 1), LocalDate.of(2023, 1, 10));
-        DateRange range2 = new DateRange(LocalDate.of(2023, 2, 1), LocalDate.of(2023, 2, 5));
-        DateRange range3 = new DateRange(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 15));
-        PriceForRange priceForRange1 = new PriceForRange(100.0, range1);
-        PriceForRange priceForRange2 = new PriceForRange(150.0, range2);
-        PriceForRange priceForRange3 = new PriceForRange(200.0, range3);
-        List<PriceForRange> priceForRangeList = new ArrayList<>();
-        priceForRangeList.add(priceForRange1);
-        priceForRangeList.add(priceForRange2);
-        priceForRangeList.add(priceForRange3);
-        PriceCalculatorInterface priceCalculator = new PriceCalculatorImpl(priceForRangeList);
+        // Inicializar mocks
+        mockHousingType = mock(HousingType.class);
+        mockAddress = mock(Address.class);
+        mockServices = new ArrayList<>();
+        mockPictures = new ArrayList<>();
+        mockStayDetails = mock(HousingStayDetails.class);
+        mockPaymentMethods = new ArrayList<>();
+        mockPriceCalculator = mock(PriceCalculatorInterface.class);
+        mockOwner = mock(Owner.class);
 
-        housing = new Housing(housingType, area, address, services, capacity, pictures, stayDetails, paymentMethods, priceCalculator, null);
+        // Crear una instancia de Housing
+        housing = new Housing(mockHousingType, 100.0f, mockAddress, mockServices, 4,
+                mockPictures, mockStayDetails, mockPaymentMethods, mockPriceCalculator, mockOwner);
     }
 
     @Test
-    public void testAddRating() {
-        housing.addRating(4);
-        assertEquals(4, housing.getAverageRating());
-
-        housing.addRating(5);
-        assertEquals(4.5, housing.getAverageRating());
+    public void testGetPrice() {
+        DateRange mockDateRange = mock(DateRange.class);
+        double expectedPrice = 200.0;
+        
+        // Simular el comportamiento del PriceCalculator
+        when(mockPriceCalculator.getPrice(mockDateRange)).thenReturn(expectedPrice);
+        
+        double price = housing.getPrice(mockDateRange);
+        
+        assertEquals(expectedPrice, price);
+        verify(mockPriceCalculator).getPrice(mockDateRange);
     }
 
     @Test
-    public void testGetAverageRatingWithNoRatings() {
-        assertEquals(0, housing.getAverageRating());
+    public void testGetCapacity() {
+        int capacity = housing.getCapacity();
+        assertEquals(4, capacity);
+    }
+
+    @Test
+    public void testGetAddress() {
+        Address address = housing.getAddress();
+        assertEquals(mockAddress, address);
+    }
+
+    @Test
+    public void testIsLocatedIn() {
+        City mockCity = mock(City.class);
+        when(mockAddress.getCity()).thenReturn(mockCity);
+        
+        assertTrue(housing.isLocatedIn(mockCity));
+    }
+
+    @Test
+    public void testIsAvailable() {
+        DateRange mockDateRange = mock(DateRange.class);
+        assertTrue(housing.isAvailable(mockDateRange)); // Asumiendo que siempre devuelve true
+    }
+
+    @Test
+    public void testGetOwner() {
+        Owner owner = housing.getOwner();
+        assertEquals(mockOwner, owner);
+    }
+
+    @Test
+    public void testAddRanking() {
+        Ranking mockRanking = mock(Ranking.class);
+        housing.addRanking(mockRanking);
+        
+        List<Ranking> rankings = housing.getRankings();
+        assertEquals(1, rankings.size());
+        assertTrue(rankings.contains(mockRanking));
+    }
+
+    @Test
+    public void testGetCity() {
+        City mockCity = mock(City.class);
+        when(mockAddress.getCity()).thenReturn(mockCity);
+        
+        City city = housing.getCity();
+        assertEquals(mockCity, city);
     }
 }
