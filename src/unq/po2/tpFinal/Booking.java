@@ -27,7 +27,11 @@ public class Booking {
 
     public Owner getOwner(){
         return this.housing.getOwner();
-    } 
+    }
+    
+    public DateRange getRange() {
+    	return this.range;
+    }
     
     public void checkOut(List<Ranking> rankings) {
     	rankings.forEach(ranking -> ranking.getRanker().rank(ranking));

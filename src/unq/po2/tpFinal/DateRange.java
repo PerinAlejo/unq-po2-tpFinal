@@ -28,6 +28,11 @@ public class DateRange {
         return overlapEnd.toEpochDay() - overlapStart.toEpochDay() + 1;
     }
     
+    public boolean overlaps(DateRange other) {
+        return (start.isBefore(other.getEnd()) || start.isEqual(other.getEnd())) &&
+               (end.isAfter(other.getStart()) || end.isEqual(other.getStart()));
+    }
+    
     public boolean startsAfter(LocalDate date) {
     	return this.start.isAfter(date);
     }

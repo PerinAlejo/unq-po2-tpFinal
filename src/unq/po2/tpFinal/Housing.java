@@ -1,7 +1,9 @@
 package unq.po2.tpFinal;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
 public class Housing implements Rankeable {
 	private HousingType housingType;
@@ -16,6 +18,8 @@ public class Housing implements Rankeable {
 	private List<Ranking> rankings;
 	private Owner owner;
 	private CancellationPolicy cancellationPolicy;
+	private List<Booking> bookings = new ArrayList<>();
+    private Queue<Booking> waitlist = new LinkedList<>();  // Cola de reservas pendientes
 	
 	public Housing(HousingType housingType, float area, Address address, List<Service> services, int capacity,
 			List<Picture> pictures, HousingStayDetails stayDetails, List<PaymentMethod> paymentMethods,
@@ -74,4 +78,26 @@ public class Housing implements Rankeable {
 	public double getCancelationFee(DateRange range) {
 		return this.cancellationPolicy.getCancellationFee(range);
 	}
+	
+	public boolean isOccupied(DateRange range) {
+        return bookings.stream().anyMatch(booking -> booking.getRange().overlaps(range));
+    }
+	
+	public void addBooking(Booking booking) {
+        this.bookings.add(booking);
+    }
+
+    public void addToWaitlist(Booking booking) {
+        this.waitlist.add(booking);
+    }
+
+    public void processWaitlist() {
+        //procesar la cola de espera cuando haya disponibilidad
+        for (Booking waitlistedBooking : new ArrayList<>(waitlist)) {
+            if (!isOccupied(waitlistedBooking.getRange())) {
+                bookings.add(waitlistedBooking); //se acepta la reserva
+                waitlist.remove(waitlistedBooking); //se elimina de la cola de espera
+            }
+        }
+    }
 }
