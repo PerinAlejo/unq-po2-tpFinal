@@ -27,14 +27,12 @@ public class BookingSystemTest {
 
 	@BeforeEach
 	public void setUp() {
-		// Inicializar mocks
 		mockCancelledObservers = new ArrayList<>();
 		mockAcceptedObservers = new ArrayList<>();
 		mockBooking = mock(Booking.class);
 		mockTenant = mock(Tenant.class);
 		mockCity = mock(City.class);
 
-		// Crear una instancia de BookingSystem
 		bookingSystem = new BookingSystem(mockCancelledObservers, mockAcceptedObservers);
 	}
 
