@@ -379,9 +379,141 @@ class PriceCalculatorImpl implements PriceCalculatorInterface{
 
 PriceCalculatorImpl-->PriceForRange:priceForRanges
 
-class CapacityFilter {
+class CapacityFilter implements SearchFilter{
     - capacity: int
+
     + filter(housingList: List<Housing>): List<Housing>
+}
+
+class CityFilter implements SearchFilter{
+    - city: City
+
+    + filter(housingList: List<Housing>): List<Housing>
+}
+
+class DateRangeFilter implements SearchFilter{
+    - dateRange: DateRange
+
+    + filter(housingList: List<Housing>): List<Housing>
+}
+
+DateRangeFilter --> DateRange:dateRange
+
+class HousingSearch implements SearchFilter{
+    - filterList: List<SearchFilter>
+
+    + filter(housingList: List<Housing>): List<Housing>
+}
+
+HousingSearch-->SearchFilter:filterList
+
+
+class MinPriceFilter implements SearchFilter{
+    - minPrice: double
+    - dateRange: DateRange
+    
+    + filter(housingList: List<Housing>): List<Housing>
+}
+
+MinPriceFilter --> DateRange:dateRange
+
+class MaxPriceFilter implements SearchFilter{
+    - maxPrice: double
+    - dateRange: DateRange
+    
+    + filter(housingList: List<Housing>): List<Housing>
+}
+
+MaxPriceFilter --> DateRange:dateRange
+
+class HousingSearchBuilder {
+    - filterList: List<HousingSearchBuilder>
+    - dateRange: DateRange
+
+    + HousingSearchBuilder(city: City, dateRange: DateRange)
+    + setCapacity(capacity: int): HousingSearchBuilder
+    + setMinPrice(minPrice: double): HousingSearchBuilder
+    + setMaxPrice(maxPrice: double): HousingSearchBuilder
+    + build(): SearchFilter
+}
+
+HousingSearchBuilder --> HousingSearchBuilder:filterList
+HousingSearchBuilder --> DateRange: dateRange
+
+class CategoryAverageView {
+    - average: double
+    - category: Category
+
+    + CategoryAverageView(average: double, category: Category)
+    + getAverage(): double
+    + getCategory(): Category
+}
+
+CategoryAverageView -->Category: category
+
+class CommentView {
+    - text: String
+    - commentedOn: LocalDate
+    - by: Ranker
+    - scores: List<CategoryScore>
+
+    + CommentView(text: String, commentedOn: LocalDate, by: Ranker, scores: List<CategoryScore>)
+    + fromRanking(ranking: Ranking): CommentView
+    + getText(): String
+    + getCommentedOn(): LocalDate
+    + getBy(): Ranker
+    + getScores(): List<CategoryScore>
+}
+
+CommentView --> Ranker: by
+CommentView --> CategoryScore:scores
+
+class HousingView {
+    - housing: Housing
+
+    + HousingView(housing: Housing)
+    + comments(): List<CommentView>
+    + categoryAverages(): List<CategoryAverageView>
+    + ownerDetails(): OwnerView
+}
+
+HousingView -->Housing: housing
+
+@startuml
+class OwnerRentalView {
+    - owner: Owner
+    - housing: Housing
+
+    + OwnerRentalView(owner: Owner, currentHousing: Housing)
+    + getTotalRentsForHousing(): long
+    + getTotalRentsForAllHousings(): int
+    + getTotalTimesHasRentedCurrentHousing(): long
+    + getRentalsForCurrentHousing(): List<Housing>
+}
+
+OwnerRentalView -->Owner: owner
+OwnerRentalView -->Housing: housing
+
+
+class OwnerView {
+    - owner: Owner
+    - currentHousing: Housing
+
+    + OwnerView(owner: Owner, currentHousing: Housing)
+    + getAllScores(): List<Integer>
+    + getAverageScore(): double
+    + getCreatedOn(): LocalDateTime
+    + getOwnerRentalView(): OwnerRentalView
+}
+
+OwnerView -->Owner: owner
+OwnerView -->Housing: currentHousing
+
+
+
+
+interface SearchFilter {
+	+filter(housingList: List<Housing> ): List<Housing> 
 }
 
 interface Categories{
