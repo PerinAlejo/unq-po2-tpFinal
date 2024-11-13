@@ -6,6 +6,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import unq.po2.tpFinal.*;
+import unq.po2.tpFinal.domain.Booking;
+import unq.po2.tpFinal.domain.Category;
+import unq.po2.tpFinal.domain.Housing;
+import unq.po2.tpFinal.domain.HousingType;
+import unq.po2.tpFinal.domain.Service;
+import unq.po2.tpFinal.domain.Tenant;
 
 import java.time.LocalDate;
 import java.util.*;

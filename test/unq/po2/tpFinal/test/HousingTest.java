@@ -6,6 +6,19 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import unq.po2.tpFinal.*;
+import unq.po2.tpFinal.domain.Address;
+import unq.po2.tpFinal.domain.CancellationPolicy;
+import unq.po2.tpFinal.domain.City;
+import unq.po2.tpFinal.domain.DateRange;
+import unq.po2.tpFinal.domain.Housing;
+import unq.po2.tpFinal.domain.HousingStayDetails;
+import unq.po2.tpFinal.domain.HousingType;
+import unq.po2.tpFinal.domain.Owner;
+import unq.po2.tpFinal.domain.PaymentMethod;
+import unq.po2.tpFinal.domain.Picture;
+import unq.po2.tpFinal.domain.PriceCalculatorInterface;
+import unq.po2.tpFinal.domain.Ranking;
+import unq.po2.tpFinal.domain.Service;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +33,7 @@ public class HousingTest {
     private HousingStayDetails mockStayDetails;
     private List<PaymentMethod> mockPaymentMethods;
     private PriceCalculatorInterface mockPriceCalculator;
+    private CancellationPolicy mockCancellationPolicy;
     private Owner mockOwner;
 
     @BeforeEach
@@ -33,10 +47,11 @@ public class HousingTest {
         mockPaymentMethods = new ArrayList<>();
         mockPriceCalculator = mock(PriceCalculatorInterface.class);
         mockOwner = mock(Owner.class);
+        mockCancellationPolicy = mock(CancellationPolicy.class);
 
         // Crear una instancia de Housing
         housing = new Housing(mockHousingType, 100.0f, mockAddress, mockServices, 4,
-                mockPictures, mockStayDetails, mockPaymentMethods, mockPriceCalculator, mockOwner);
+                mockPictures, mockStayDetails, mockPaymentMethods, mockPriceCalculator, mockOwner, mockCancellationPolicy);
     }
 
     @Test

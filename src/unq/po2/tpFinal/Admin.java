@@ -7,6 +7,13 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import unq.po2.tpFinal.domain.Booking;
+import unq.po2.tpFinal.domain.Category;
+import unq.po2.tpFinal.domain.Housing;
+import unq.po2.tpFinal.domain.HousingType;
+import unq.po2.tpFinal.domain.Service;
+import unq.po2.tpFinal.domain.Tenant;
+
 public class Admin {
 //	Dar de alta las categorías que se utilizan en los rankeos para las
 //	distintas entidades del sistema: propietario, inquilino e inmueble.	

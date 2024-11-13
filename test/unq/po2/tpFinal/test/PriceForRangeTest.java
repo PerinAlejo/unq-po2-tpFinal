@@ -8,9 +8,9 @@ import java.util.Collections;
 
 import org.junit.jupiter.api.Test;
 
-import unq.po2.tpFinal.DateRange;
-import unq.po2.tpFinal.PriceCalculatorImpl;
-import unq.po2.tpFinal.PriceForRange;
+import unq.po2.tpFinal.domain.DateRange;
+import unq.po2.tpFinal.domain.PriceForRange;
+import unq.po2.tpFinal.implementations.PriceCalculatorImpl;
 
 public class PriceForRangeTest {
 

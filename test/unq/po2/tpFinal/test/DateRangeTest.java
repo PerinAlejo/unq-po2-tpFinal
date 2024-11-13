@@ -6,7 +6,7 @@ import java.time.LocalDate;
 
 import org.junit.jupiter.api.Test;
 
-import unq.po2.tpFinal.DateRange;
+import unq.po2.tpFinal.domain.DateRange;
 
 
 public class DateRangeTest {

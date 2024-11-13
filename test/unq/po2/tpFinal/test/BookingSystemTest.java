@@ -6,6 +6,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import unq.po2.tpFinal.*;
+import unq.po2.tpFinal.domain.Booking;
+import unq.po2.tpFinal.domain.BookingAcceptedObserver;
+import unq.po2.tpFinal.domain.BookingCancelledObserver;
+import unq.po2.tpFinal.domain.City;
+import unq.po2.tpFinal.domain.Tenant;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -17,6 +22,7 @@ public class BookingSystemTest {
 
     private BookingSystem bookingSystem;
     private List<BookingCancelledObserver> mockCancelledObservers;
+    private List<BookingAcceptedObserver> mockAcceptedObservers;
     private Booking mockBooking;
     private Tenant mockTenant;
     private City mockCity;
@@ -25,12 +31,13 @@ public class BookingSystemTest {
     public void setUp() {
         // Inicializar mocks
         mockCancelledObservers = new ArrayList<>();
+        mockAcceptedObservers = new ArrayList<>();
         mockBooking = mock(Booking.class);
         mockTenant = mock(Tenant.class);
         mockCity = mock(City.class);
         
         // Crear una instancia de BookingSystem
-        bookingSystem = new BookingSystem(mockCancelledObservers);
+        bookingSystem = new BookingSystem(mockCancelledObservers, mockAcceptedObservers);
     }
 
     @Test

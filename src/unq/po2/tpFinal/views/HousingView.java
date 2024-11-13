@@ -4,16 +4,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import unq.po2.tpFinal.CategoryScore;
-import unq.po2.tpFinal.Comment;
-import unq.po2.tpFinal.Housing;
-import unq.po2.tpFinal.Ranking;
-//En el listado obtenido a partir de una búsqueda mediante filtros, el potencial
-//inquilino podrá seleccionar un inmueble para su visualización, a partir de lo cual el
-//sistema le mostrará todos los datos del mismo, incluyendo 
-// -- comentarios de otros usuarios que lo han alquilado previamente
-// -- el puntaje que éstos le han dado en los distintos aspectos/categorías
-// -- el promedio de puntaje total y por categoría.
+import unq.po2.tpFinal.domain.CategoryScore;
+import unq.po2.tpFinal.domain.Housing;
+import unq.po2.tpFinal.domain.Ranking;
 
 //A su vez, para un inmueble, el usuario podrá visualizar también la
 //información propia del dueño, el puntaje que otros usuarios le han dado a él mismo
@@ -29,11 +22,11 @@ public class HousingView {
         this.housing = housing;
     }
 
-    public List<Comment> comments(){
+    public List<CommentView> comments(){
         return this.housing
         		.getRankings()
         		.stream()
-        		.map(ranking -> Comment.fromRanking(ranking))
+        		.map(ranking -> CommentView.fromRanking(ranking))
         		.toList();
     }
 

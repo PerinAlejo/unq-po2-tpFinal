@@ -11,6 +11,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import unq.po2.tpFinal.*;
+import unq.po2.tpFinal.domain.City;
+import unq.po2.tpFinal.domain.DateRange;
+import unq.po2.tpFinal.domain.Housing;
+import unq.po2.tpFinal.search.HousingSearchBuilder;
+import unq.po2.tpFinal.search.SearchFilter;
 
 class HousingSerchTest {
 

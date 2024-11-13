@@ -1,6 +1,6 @@
 package unq.po2.tpFinal.views;
 
-import unq.po2.tpFinal.Category;
+import unq.po2.tpFinal.domain.Category;
 
 public class CategoryAverage {
     private double average;

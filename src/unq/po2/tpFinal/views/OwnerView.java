@@ -3,8 +3,8 @@ package unq.po2.tpFinal.views;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import unq.po2.tpFinal.Housing;
-import unq.po2.tpFinal.Owner;
+import unq.po2.tpFinal.domain.Housing;
+import unq.po2.tpFinal.domain.Owner;
 
 public class OwnerView {
     private Owner owner;
