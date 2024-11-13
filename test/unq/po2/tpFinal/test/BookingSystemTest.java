@@ -40,7 +40,6 @@ public class BookingSystemTest {
 	public void testNotifyBookingAccepted() {
 		bookingSystem.notifyBookingAccepted(mockBooking);
 
-		// Verificar que el booking fue agregado
 		List<Booking> allBookings = bookingSystem.getAllBookings();
 		assertEquals(1, allBookings.size());
 		assertTrue(allBookings.contains(mockBooking));
@@ -50,10 +49,8 @@ public class BookingSystemTest {
 	public void testCancelBooking() {
 		bookingSystem.notifyBookingAccepted(mockBooking);
 
-		// Cancelar la reserva
 		bookingSystem.cancelBooking(mockBooking);
 
-		// Verificar que el booking fue removido
 		List<Booking> allBookings = bookingSystem.getAllBookings();
 		assertEquals(0, allBookings.size());
 	}
@@ -65,10 +62,8 @@ public class BookingSystemTest {
 
 		bookingSystem.notifyBookingAccepted(mockBooking);
 
-		// Cancelar la reserva
 		bookingSystem.cancelBooking(mockBooking);
 
-		// Verificar que el observer fue notificado
 		verify(mockObserver).notifyBookingCancelled(mockBooking);
 	}
 
