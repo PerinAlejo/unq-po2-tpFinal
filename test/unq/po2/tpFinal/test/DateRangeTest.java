@@ -80,7 +80,6 @@ public class DateRangeTest {
 		assertEquals(0, range1.getOverlapDays(range2));
 	}
 
-	// Tests for overlaps, startsAfter, and contains
 
 	@Test
 	public void testOverlaps() {
@@ -136,5 +135,19 @@ public class DateRangeTest {
 		DateRange range = new DateRange(LocalDate.of(2023, 1, 5), LocalDate.of(2023, 1, 15));
 		LocalDate date = LocalDate.of(2023, 1, 5);
 		assertFalse(range.contains(date));
+	}
+	
+	@Test
+	public void testOverlapsWithSameEndDate() {
+		DateRange range1 = new DateRange(LocalDate.of(2023, 1, 1), LocalDate.of(2023, 1, 10));
+		DateRange range2 = new DateRange(LocalDate.of(2023, 1, 5), LocalDate.of(2023, 1, 10));
+		assertTrue(range1.overlaps(range2));
+	}
+
+	@Test
+	public void testOverlapsWithSameStartDate() {
+		DateRange range1 = new DateRange(LocalDate.of(2023, 1, 5), LocalDate.of(2023, 1, 15));
+		DateRange range2 = new DateRange(LocalDate.of(2023, 1, 5), LocalDate.of(2023, 1, 10));
+		assertTrue(range1.overlaps(range2));
 	}
 }

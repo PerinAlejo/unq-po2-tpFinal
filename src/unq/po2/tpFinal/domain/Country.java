@@ -10,5 +10,4 @@ public class Country {
 	public String getName() {
 		return name;
 	}
-
 }

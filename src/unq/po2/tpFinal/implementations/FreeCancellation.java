@@ -8,6 +8,7 @@ import unq.po2.tpFinal.domain.DateRange;
 import unq.po2.tpFinal.domain.Housing;
 
 public class FreeCancellation extends CancellationPolicy {
+	private static final int MAX_DAYS_FOR_FREE_CANCELLATION = 10;
 
 	public FreeCancellation(Housing housing) {
 		super(housing);
@@ -16,16 +17,15 @@ public class FreeCancellation extends CancellationPolicy {
 	@Override
 	public double getCancellationFee(DateRange range) {
 
-		long diasRestantes = ChronoUnit.DAYS.between(LocalDate.now(), range.getStart());
+		long remainingDays = ChronoUnit.DAYS.between(LocalDate.now(), range.getStart());
 
-		if (diasRestantes >= 10) {
+		if (remainingDays >= MAX_DAYS_FOR_FREE_CANCELLATION) {
 			return 0;
-		} else if (diasRestantes > 0) {
-			DateRange newRange = new DateRange(range.getStart(), range.getStart().plusDays(2));
-			return this.getHousing().getPrice(newRange); // Se calcula el precio para dos dias de estadia
-		} else {
-			return this.getHousing().getPrice(range); // Que pasa aca???
 		}
+		return this.getHousing().getPrice(this.twoDaysRange(range)); // Se calcula el precio para dos dias de estadia
 	}
 
+	private DateRange twoDaysRange(DateRange range) {
+		return new DateRange(range.getStart(), range.getStart().plusDays(2));
+	}
 }
