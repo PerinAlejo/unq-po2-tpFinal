@@ -3,6 +3,11 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import unq.po2.tpFinal.interfaces.BookingAcceptedObserver;
+import unq.po2.tpFinal.interfaces.PaymentMethod;
+import unq.po2.tpFinal.interfaces.Rankeable;
+import unq.po2.tpFinal.interfaces.Ranker;
+
 public class Tenant extends User implements Rankeable, Ranker {
 	private List<Ranking> rankings;	
 	

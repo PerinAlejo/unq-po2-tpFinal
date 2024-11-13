@@ -3,6 +3,9 @@ package unq.po2.tpFinal.domain;
 import java.time.LocalDate;
 import java.util.List;
 
+import unq.po2.tpFinal.interfaces.Rankeable;
+import unq.po2.tpFinal.interfaces.Ranker;
+
 public class Ranking {
 	private Ranker ranker;
 	private Rankeable ranked;

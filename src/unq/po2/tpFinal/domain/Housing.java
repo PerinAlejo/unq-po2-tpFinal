@@ -3,6 +3,11 @@ package unq.po2.tpFinal.domain;
 import java.util.ArrayList;
 import java.util.List;
 
+import unq.po2.tpFinal.interfaces.PaymentMethod;
+import unq.po2.tpFinal.interfaces.PriceCalculatorInterface;
+import unq.po2.tpFinal.interfaces.Rankeable;
+import unq.po2.tpFinal.interfaces.Service;
+
 public class Housing implements Rankeable {
 	private HousingType housingType;
 	private float area;

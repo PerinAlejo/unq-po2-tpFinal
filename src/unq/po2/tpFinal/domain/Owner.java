@@ -4,6 +4,10 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import unq.po2.tpFinal.interfaces.BookingAcceptanceStrategy;
+import unq.po2.tpFinal.interfaces.Rankeable;
+import unq.po2.tpFinal.interfaces.Ranker;
+
 public class Owner extends User implements Rankeable, Ranker {
 	private List<Ranking> rankings;
 	private List<Booking> rentals;
@@ -47,12 +51,7 @@ public class Owner extends User implements Rankeable, Ranker {
 		}
 	}
 
-	public void removalRental(Booking booking) {
-		this.rentals.remove(booking);
-	}
-
 	public void cancelBook(Booking booking) {
-		this.removalRental(booking);
-
+		this.rentals.remove(booking);
 	}
 }

@@ -2,11 +2,11 @@ package unq.po2.tpFinal.views;
 
 import unq.po2.tpFinal.domain.Category;
 
-public class CategoryAverage {
+public class CategoryAverageView {
     private double average;
     private Category category;
     
-    public CategoryAverage(double average, Category category) {
+    public CategoryAverageView(double average, Category category) {
         this.average = average;
         this.category = category;
     }

@@ -5,15 +5,11 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import unq.po2.tpFinal.*;
 import unq.po2.tpFinal.domain.Booking;
-import unq.po2.tpFinal.domain.BookingAcceptanceStrategy;
-import unq.po2.tpFinal.domain.BookingAcceptedObserver;
 import unq.po2.tpFinal.domain.Owner;
 import unq.po2.tpFinal.domain.Ranking;
-
+import unq.po2.tpFinal.interfaces.BookingAcceptanceStrategy;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 public class OwnerTest {
@@ -21,16 +17,14 @@ public class OwnerTest {
 	private Owner owner;
 	private Booking mockBooking;
 	private BookingAcceptanceStrategy mockAcceptanceStrategy;
-	
 
 	@BeforeEach
 	public void setUp() {
-		// Inicializar mocks
-		mockAcceptanceStrategy = mock(BookingAcceptanceStrategy.class);		
-		mockBooking = mock(Booking.class);
 
-		// Crear una instancia de Owner
-		owner = new Owner("Jane Doe", "jane@example.com", "0987654321", LocalDateTime.now(), mockAcceptanceStrategy);
+		mockAcceptanceStrategy = mock(BookingAcceptanceStrategy.class);
+		mockBooking = mock(Booking.class);
+		owner = new Owner("Juanita Perez", "perez@perez.com", "0987654321", LocalDateTime.now(),
+				mockAcceptanceStrategy);
 	}
 
 	@Test
@@ -85,33 +79,20 @@ public class OwnerTest {
 
 	@Test
 	public void testAcceptBooking() {
-		// Simular el comportamiento de la estrategia de aceptación
+
 		when(mockAcceptanceStrategy.isAcceptable(mockBooking)).thenReturn(true);
 
-		// Crear un mock para el observer
-		BookingAcceptedObserver mockObserver = mock(BookingAcceptedObserver.class);
-		mockObservers.add(mockObserver);
-
-		// Llamar al método accept
 		owner.accept(mockBooking);
 
-		// Verificar que el método notifyBookingAccepted fue llamado
-		verify(mockObserver).notifyBookingAccepted(mockBooking);
+		verify(mockBooking).acceptBook();
 	}
 
 	@Test
 	public void testAcceptBookingNotAccepted() {
-		// Simular el comportamiento de la estrategia de aceptación
 		when(mockAcceptanceStrategy.isAcceptable(mockBooking)).thenReturn(false);
 
-		// Crear un mock para el observer
-		BookingAcceptedObserver mockObserver = mock(BookingAcceptedObserver.class);
-		mockObservers.add(mockObserver);
-
-		// Llamar al método accept
 		owner.accept(mockBooking);
 
-		// Verificar que el método notifyBookingAccepted NO fue llamado
-		verify(mockObserver, never()).notifyBookingAccepted(mockBooking);
+		verify(mockBooking, never()).acceptBook();
 	}
 }

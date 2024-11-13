@@ -7,34 +7,28 @@ import unq.po2.tpFinal.domain.Housing;
 import unq.po2.tpFinal.domain.Owner;
 
 public class OwnerView {
-    private Owner owner;
-    private Housing currentHousing;
+	private Owner owner;
+	private Housing currentHousing;
 
-    public OwnerView(Owner owner, Housing currentHousing) {
-        this.owner = owner;
-        this.currentHousing = currentHousing;
-    }
+	public OwnerView(Owner owner, Housing currentHousing) {
+		this.owner = owner;
+		this.currentHousing = currentHousing;
+	}
 
-    public List<Integer> getAllScores(){
-        return this.owner.getRankings()
-        		.stream()
-        		.flatMap(ranking -> ranking.getScores().stream().map(score -> score.getScore()))
-        		.toList();
-    }
+	public List<Integer> getAllScores() {
+		return this.owner.getRankings().stream()
+				.flatMap(ranking -> ranking.getScores().stream().map(score -> score.getScore())).toList();
+	}
 
-    public double getAverageScore(){
-        return getAllScores()
-            .stream()
-            .mapToInt(score -> score)
-            .average()
-            .getAsDouble();
-    }
+	public double getAverageScore() {
+		return getAllScores().stream().mapToInt(score -> score).average().getAsDouble();
+	}
 
-    public LocalDateTime getCreatedOn(){
-        return this.owner.getCreatedOn();
-    }
+	public LocalDateTime getCreatedOn() {
+		return this.owner.getCreatedOn();
+	}
 
-    public OwnerRentalView getOwnerRentalView(){
-        return new OwnerRentalView(owner, currentHousing);
-    }
+	public OwnerRentalView getOwnerRentalView() {
+		return new OwnerRentalView(owner, currentHousing);
+	}
 }
