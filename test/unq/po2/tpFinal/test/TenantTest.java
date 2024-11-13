@@ -5,9 +5,17 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import unq.po2.tpFinal.*;
+import unq.po2.tpFinal.domain.Booking;
+import unq.po2.tpFinal.domain.DateRange;
+import unq.po2.tpFinal.domain.Housing;
+import unq.po2.tpFinal.domain.Owner;
+import unq.po2.tpFinal.domain.Ranking;
+import unq.po2.tpFinal.domain.Tenant;
+import unq.po2.tpFinal.interfaces.BookingAcceptedObserver;
+import unq.po2.tpFinal.interfaces.PaymentMethod;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 public class TenantTest {
@@ -18,19 +26,21 @@ public class TenantTest {
     private Owner mockOwner;
     private DateRange mockDateRange;
     private PaymentMethod paymentMethod;
+    private List<BookingAcceptedObserver> observers;
+    
     @BeforeEach
     public void setUp() {
-        // Inicializar un Tenant
-        tenant = new Tenant("John Doe", "john@example.com", "1234567890", LocalDateTime.now());
 
-        // Crear mocks para las dependencias
+        tenant = new Tenant("John Bonachon", "john@bonachon.com", "0303456", LocalDateTime.now());
+
+
         mockRanking = mock(Ranking.class);
         mockHousing = mock(Housing.class);
         mockOwner = mock(Owner.class);
         mockDateRange = mock(DateRange.class);
-        paymentMethod = PaymentMethod.Cash;
-        
-        // Configurar el mockHousing para que devuelva el mockOwner
+        paymentMethod = mock(PaymentMethod.class);
+        observers = new ArrayList<>();
+
         when(mockHousing.getOwner()).thenReturn(mockOwner);
     }
 
@@ -54,12 +64,12 @@ public class TenantTest {
 
     @Test
     public void testRank() {
-        // Simular el comportamiento del ranking
+
         when(mockRanking.getRanked()).thenReturn(tenant);
         
         tenant.rank(mockRanking);
         
-        // Verificar que el ranking fue agregado
+
         List<Ranking> rankings = tenant.getRankings();
         assertEquals(1, rankings.size());
         assertEquals(mockRanking, rankings.get(0));
@@ -67,16 +77,13 @@ public class TenantTest {
 
     @Test
     public void testBook() {
-        // Crear la reserva directamente en el método book
+
         Booking mockBooking = new Booking(mockHousing, tenant, mockDateRange, paymentMethod);
-        
-        // Simular que el owner acepta la reserva
+
         doNothing().when(mockOwner).accept(mockBooking);
-        
-        // Llamar al método book
-        tenant.book(mockHousing, mockDateRange, paymentMethod);
-        
-        // Verificar que el owner acepte la reserva
+
+        tenant.book(mockHousing, mockDateRange, paymentMethod, observers);
+
         verify(mockOwner).accept(any(Booking.class));
     }
 }

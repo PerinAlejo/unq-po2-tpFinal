@@ -6,6 +6,17 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import unq.po2.tpFinal.domain.Booking;
+import unq.po2.tpFinal.domain.City;
+import unq.po2.tpFinal.domain.Housing;
+import unq.po2.tpFinal.domain.Tenant;
+import unq.po2.tpFinal.implementations.BookingConditionalStrategy;
+import unq.po2.tpFinal.implementations.BookingConfirmedStrategy;
+import unq.po2.tpFinal.interfaces.BookingAcceptedObserver;
+import unq.po2.tpFinal.interfaces.BookingCancelledObserver;
+import unq.po2.tpFinal.interfaces.BookingStrategy;
+
 import java.util.*;
 
 public class BookingSystem implements BookingAcceptedObserver {		
