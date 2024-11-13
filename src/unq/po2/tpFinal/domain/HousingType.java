@@ -6,4 +6,8 @@ public class HousingType {
 	public HousingType(String name) {
 		this.name = name;
 	}
+	
+	public String getName() {
+		return this.name;
+	}
 }

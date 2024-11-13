@@ -8,6 +8,8 @@ import org.junit.jupiter.api.Test;
 import unq.po2.tpFinal.*;
 import unq.po2.tpFinal.domain.Booking;
 import unq.po2.tpFinal.domain.City;
+import unq.po2.tpFinal.domain.DateRange;
+import unq.po2.tpFinal.domain.Housing;
 import unq.po2.tpFinal.domain.Tenant;
 import unq.po2.tpFinal.interfaces.BookingAcceptedObserver;
 import unq.po2.tpFinal.interfaces.BookingCancelledObserver;
@@ -121,4 +123,111 @@ public class BookingSystemTest {
 		assertEquals(1, bookingCities.size());
 		assertTrue(bookingCities.contains(mockCity));
 	}
+
+	@Test
+	public void testProcessBookingWhenHousingNotAvailable() {
+		Booking existingBooking = mock(Booking.class);
+		Booking newBooking = mock(Booking.class);
+		Housing housing = mock(Housing.class);
+		DateRange existingRange = mock(DateRange.class);
+		DateRange newRange = mock(DateRange.class);
+
+		when(existingBooking.getHousing()).thenReturn(housing);
+		when(existingBooking.getRange()).thenReturn(existingRange);
+
+		when(newBooking.getHousing()).thenReturn(housing);
+		when(newBooking.getRange()).thenReturn(newRange);
+
+		when(existingRange.overlaps(newRange)).thenReturn(true);
+
+		bookingSystem.notifyBookingAccepted(existingBooking);
+		bookingSystem.notifyBookingAccepted(newBooking);
+
+		List<Booking> allBookings = bookingSystem.getAllBookings();
+		assertEquals(1, allBookings.size());
+		assertTrue(allBookings.contains(existingBooking));
+		assertFalse(allBookings.contains(newBooking));
+	}
+
+	@Test
+	public void testCancelBookingProcessesNextConditionalBooking() {
+		Booking existingBooking = mock(Booking.class);
+		Booking conditionalBooking = mock(Booking.class);
+		Housing housing = mock(Housing.class);
+		DateRange existingRange = mock(DateRange.class);
+		DateRange conditionalRange = mock(DateRange.class);
+
+		when(existingBooking.getHousing()).thenReturn(housing);
+		when(existingBooking.getRange()).thenReturn(existingRange);
+
+		when(conditionalBooking.getHousing()).thenReturn(housing);
+		when(conditionalBooking.getRange()).thenReturn(conditionalRange);
+
+		when(existingRange.overlaps(conditionalRange)).thenReturn(true);
+
+		bookingSystem.notifyBookingAccepted(existingBooking);
+		bookingSystem.notifyBookingAccepted(conditionalBooking);
+
+		bookingSystem.cancelBooking(existingBooking);
+
+		List<Booking> allBookings = bookingSystem.getAllBookings();
+		assertEquals(1, allBookings.size());
+		assertTrue(allBookings.contains(conditionalBooking));
+	}
+
+	@Test
+	public void testIsHousingAvailableOverlaps() {
+		Booking existingBooking = mock(Booking.class);
+		Booking newBooking = mock(Booking.class);
+		Housing housing = mock(Housing.class);
+		DateRange existingRange = mock(DateRange.class);
+		DateRange newRange = mock(DateRange.class);
+
+		when(existingBooking.getHousing()).thenReturn(housing);
+		when(existingBooking.getRange()).thenReturn(existingRange);
+
+		when(newBooking.getHousing()).thenReturn(housing);
+		when(newBooking.getRange()).thenReturn(newRange);
+
+		when(existingRange.overlaps(newRange)).thenReturn(true);
+
+		bookingSystem.notifyBookingAccepted(existingBooking);
+
+		bookingSystem.notifyBookingAccepted(newBooking);
+
+		List<Booking> allBookings = bookingSystem.getAllBookings();
+		assertEquals(1, allBookings.size());
+		assertTrue(allBookings.contains(existingBooking));
+		assertFalse(allBookings.contains(newBooking));
+	}
+
+	@Test
+	public void testNotifyObserversBookingAccepted() {
+
+		BookingAcceptedObserver observer = mock(BookingAcceptedObserver.class);
+		bookingSystem.bookingAcceptedObservers.add(observer);
+
+		Booking existingBooking = mock(Booking.class);
+		Booking waitlistedBooking = mock(Booking.class);
+		Housing housing = mock(Housing.class);
+		DateRange existingRange = mock(DateRange.class);
+		DateRange waitlistedRange = mock(DateRange.class);
+
+		when(existingBooking.getHousing()).thenReturn(housing);
+		when(existingBooking.getRange()).thenReturn(existingRange);
+
+		when(waitlistedBooking.getHousing()).thenReturn(housing);
+		when(waitlistedBooking.getRange()).thenReturn(waitlistedRange);
+
+		when(existingRange.overlaps(waitlistedRange)).thenReturn(true);
+
+		bookingSystem.notifyBookingAccepted(existingBooking);
+
+		bookingSystem.notifyBookingAccepted(waitlistedBooking);
+
+		bookingSystem.cancelBooking(existingBooking);
+
+		verify(observer).notifyBookingAccepted(waitlistedBooking);
+	}
+
 }

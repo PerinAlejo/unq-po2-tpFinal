@@ -77,5 +77,9 @@ public class HousingViewTest {
 		assertNotNull(categoryAverage2);
 		assertEquals(5.0, categoryAverage2.getAverage());
 	}
-
+	
+	@Test
+	public void testOwnerDetails() {
+		assertNotNull(housingView.ownerDetails());
+	}
 }
