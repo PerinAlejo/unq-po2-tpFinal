@@ -1,4 +1,4 @@
-@startuml
+@startuml tp
 class Admin {
     - categories: Categories
     - housingTypes: HousingTypes
@@ -479,7 +479,6 @@ class HousingView {
 
 HousingView -->Housing: housing
 
-@startuml
 class OwnerRentalView {
     - owner: Owner
     - housing: Housing
@@ -589,8 +588,5 @@ interface ReservationCancelledSubscriber {
 interface Service {
 	+ getName():String
 }
-
-
-
 
 @enduml
