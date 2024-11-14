@@ -85,4 +85,8 @@ public class Housing implements Rankeable {
 	public PaymentMethod getDefaultPaymentMethod() {
 		return this.defaultPaymentMethod;
 	}
+	
+	public HousingType getHousingType() {
+		return this.housingType;
+	}
 }

@@ -23,7 +23,7 @@ public class NoCancellationTest {
 
     @Test
     public void testGetCancellationFee() {
-        DateRange range = new DateRange(LocalDate.now().plusDays(10), LocalDate.now().plusDays(15));
+        DateRange range = new DateRange(LocalDate.now(), 5);
         when(housingMock.getPrice(range)).thenReturn(300.0);
         double fee = noCancellation.getCancellationFee(range);
         assertEquals(300.0, fee, 0.01);

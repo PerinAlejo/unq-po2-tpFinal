@@ -23,15 +23,15 @@ public class IntermediateCancellationTest {
 
     @Test
     public void testGetCancellationFeeMoreThanTwentyDaysBefore() {
-        DateRange range = new DateRange(LocalDate.now().plusDays(25), LocalDate.now().plusDays(30));
-
+        DateRange range = new DateRange(LocalDate.now().minusDays(25), 5);
+        when(housingMock.getPrice(range)).thenReturn(400.0);
         double fee = intermediateCancellation.getCancellationFee(range);
         assertEquals(0.0, fee, 0.01);
     }
 
     @Test
     public void testGetCancellationFeeBetweenTenAndTwentyDaysBefore() {
-        DateRange range = new DateRange(LocalDate.now().plusDays(15), LocalDate.now().plusDays(20));
+        DateRange range = new DateRange(LocalDate.now().minusDays(14), 14);
         
         when(housingMock.getPrice(range)).thenReturn(400.0);
 
@@ -41,7 +41,7 @@ public class IntermediateCancellationTest {
 
     @Test
     public void testGetCancellationFeeLessThanTenDaysBefore() {
-        DateRange range = new DateRange(LocalDate.now().plusDays(5), LocalDate.now().plusDays(10));
+        DateRange range = new DateRange(LocalDate.now(), 5);
 
         when(housingMock.getPrice(range)).thenReturn(500.0);
 

@@ -16,6 +16,7 @@ import unq.po2.tpFinal.implementations.BookingConfirmedStrategy;
 import unq.po2.tpFinal.interfaces.BookingAcceptedObserver;
 import unq.po2.tpFinal.interfaces.BookingCancelledObserver;
 import unq.po2.tpFinal.interfaces.BookingStrategy;
+import unq.po2.tpFinal.implementations.EventPublisherImpl;
 
 import java.util.*;
 
@@ -25,13 +26,15 @@ public class BookingSystem implements BookingAcceptedObserver {
 	private Map<Housing, Queue<Booking>> conditionalBookings;
 	public List<BookingCancelledObserver> bookingCancelledObservers;
 	public List<BookingAcceptedObserver> bookingAcceptedObservers;
+	private EventPublisherImpl eventPublisher;
 	
-	public BookingSystem(List<BookingCancelledObserver> bookingCancelledObserver, List<BookingAcceptedObserver> bookingAcceptedObserver) {
+	public BookingSystem(List<BookingCancelledObserver> bookingCancelledObserver, List<BookingAcceptedObserver> bookingAcceptedObserver, EventPublisherImpl eventPublisher) {
 		
 		confirmedBookings = new HashSet<Booking>();
 		conditionalBookings = new HashMap<>();
 		this.bookingCancelledObservers = bookingCancelledObserver;
 		this.bookingAcceptedObservers = bookingAcceptedObserver;
+		this.eventPublisher = eventPublisher;
 	}
 
 	@Override
@@ -44,6 +47,7 @@ public class BookingSystem implements BookingAcceptedObserver {
 
         if (isHousingAvailable(booking)) {
             strategy = new BookingConfirmedStrategy(confirmedBookings);
+            this.eventPublisher.notifyReservationAccepted(booking);
         } else {
             strategy = new BookingConditionalStrategy(conditionalBookings);
         }
@@ -60,7 +64,7 @@ public class BookingSystem implements BookingAcceptedObserver {
 	public void cancelBooking(Booking booking) {
 		this.confirmedBookings.remove(booking);
 		this.bookingCancelledObservers.forEach(observer -> observer.notifyBookingCancelled(booking));
-		
+		this.eventPublisher.notifyReservationCancelled(booking.getHousing().getHousingType().getName());
 		booking.cancelBook();
 		
 		//si existe proceso la siguiente reserva condicional en la cola
