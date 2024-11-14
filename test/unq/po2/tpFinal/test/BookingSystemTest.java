@@ -10,6 +10,7 @@ import unq.po2.tpFinal.domain.Booking;
 import unq.po2.tpFinal.domain.City;
 import unq.po2.tpFinal.domain.DateRange;
 import unq.po2.tpFinal.domain.Housing;
+import unq.po2.tpFinal.domain.HousingType;
 import unq.po2.tpFinal.domain.Tenant;
 import unq.po2.tpFinal.implementations.EventPublisherImpl;
 import unq.po2.tpFinal.interfaces.BookingAcceptedObserver;
@@ -27,6 +28,8 @@ public class BookingSystemTest {
 	private Booking mockBooking;
 	private Tenant mockTenant;
 	private City mockCity;
+	private Housing mockHousing;
+    private HousingType mockHousingType;
 	private EventPublisherImpl mockEventPublisher;
 
 	@BeforeEach
@@ -36,6 +39,8 @@ public class BookingSystemTest {
 		mockBooking = mock(Booking.class);
 		mockTenant = mock(Tenant.class);
 		mockCity = mock(City.class);
+		mockHousing = mock(Housing.class);
+		mockHousingType = mock(HousingType.class);
 		mockEventPublisher = mock(EventPublisherImpl.class);
 
 		bookingSystem = new BookingSystem(mockCancelledObservers, mockAcceptedObservers, mockEventPublisher);
@@ -52,8 +57,10 @@ public class BookingSystemTest {
 
 	@Test
 	public void testCancelBooking() {
+		when(mockBooking.getHousing()).thenReturn(mockHousing);
+	    when(mockHousing.getHousingType()).thenReturn(mockHousingType);
+	    when(mockHousingType.getName()).thenReturn("Apartment");
 		bookingSystem.notifyBookingAccepted(mockBooking);
-
 		bookingSystem.cancelBooking(mockBooking);
 
 		List<Booking> allBookings = bookingSystem.getAllBookings();
@@ -64,7 +71,9 @@ public class BookingSystemTest {
 	public void testCancelBookingNotifiesObservers() {
 		BookingCancelledObserver mockObserver = mock(BookingCancelledObserver.class);
 		mockCancelledObservers.add(mockObserver);
-
+		when(mockBooking.getHousing()).thenReturn(mockHousing);
+	    when(mockHousing.getHousingType()).thenReturn(mockHousingType);
+	    when(mockHousingType.getName()).thenReturn("Apartment");
 		bookingSystem.notifyBookingAccepted(mockBooking);
 
 		bookingSystem.cancelBooking(mockBooking);
@@ -167,6 +176,13 @@ public class BookingSystemTest {
 		when(conditionalBooking.getRange()).thenReturn(conditionalRange);
 
 		when(existingRange.overlaps(conditionalRange)).thenReturn(true);
+		
+		when(mockHousing.getHousingType()).thenReturn(mockHousingType);
+	    when(mockHousingType.getName()).thenReturn("Apartment");
+	    when(existingBooking.getHousing()).thenReturn(mockHousing);
+	    when(existingBooking.getRange()).thenReturn(existingRange);
+	    when(conditionalBooking.getHousing()).thenReturn(mockHousing);
+	    when(conditionalBooking.getRange()).thenReturn(conditionalRange);
 
 		bookingSystem.notifyBookingAccepted(existingBooking);
 		bookingSystem.notifyBookingAccepted(conditionalBooking);
@@ -206,31 +222,34 @@ public class BookingSystemTest {
 
 	@Test
 	public void testNotifyObserversBookingAccepted() {
+	    BookingAcceptedObserver observer = mock(BookingAcceptedObserver.class);
+	    bookingSystem.bookingAcceptedObservers.add(observer);
 
-		BookingAcceptedObserver observer = mock(BookingAcceptedObserver.class);
-		bookingSystem.bookingAcceptedObservers.add(observer);
+	    Booking existingBooking = mock(Booking.class);
+	    Booking waitlistedBooking = mock(Booking.class);
+	    Housing housing = mock(Housing.class);
+	    HousingType housingType = mock(HousingType.class);
+	    DateRange existingRange = mock(DateRange.class);
+	    DateRange waitlistedRange = mock(DateRange.class);
+	    
+	    when(housing.getHousingType()).thenReturn(housingType);
+	    when(housingType.getName()).thenReturn("Apartment");
 
-		Booking existingBooking = mock(Booking.class);
-		Booking waitlistedBooking = mock(Booking.class);
-		Housing housing = mock(Housing.class);
-		DateRange existingRange = mock(DateRange.class);
-		DateRange waitlistedRange = mock(DateRange.class);
+	    when(existingBooking.getHousing()).thenReturn(housing);
+	    when(existingBooking.getRange()).thenReturn(existingRange);
 
-		when(existingBooking.getHousing()).thenReturn(housing);
-		when(existingBooking.getRange()).thenReturn(existingRange);
+	    when(waitlistedBooking.getHousing()).thenReturn(housing);
+	    when(waitlistedBooking.getRange()).thenReturn(waitlistedRange);
 
-		when(waitlistedBooking.getHousing()).thenReturn(housing);
-		when(waitlistedBooking.getRange()).thenReturn(waitlistedRange);
+	    when(existingRange.overlaps(waitlistedRange)).thenReturn(true);
 
-		when(existingRange.overlaps(waitlistedRange)).thenReturn(true);
+	    bookingSystem.notifyBookingAccepted(existingBooking);
 
-		bookingSystem.notifyBookingAccepted(existingBooking);
+	    bookingSystem.notifyBookingAccepted(waitlistedBooking);
 
-		bookingSystem.notifyBookingAccepted(waitlistedBooking);
+	    bookingSystem.cancelBooking(existingBooking);
 
-		bookingSystem.cancelBooking(existingBooking);
-
-		verify(observer).notifyBookingAccepted(waitlistedBooking);
+	    verify(observer).notifyBookingAccepted(waitlistedBooking);
 	}
 
 }
