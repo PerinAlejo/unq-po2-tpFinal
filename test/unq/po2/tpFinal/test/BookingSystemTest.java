@@ -11,6 +11,7 @@ import unq.po2.tpFinal.domain.City;
 import unq.po2.tpFinal.domain.DateRange;
 import unq.po2.tpFinal.domain.Housing;
 import unq.po2.tpFinal.domain.Tenant;
+import unq.po2.tpFinal.implementations.EventPublisherImpl;
 import unq.po2.tpFinal.interfaces.BookingAcceptedObserver;
 import unq.po2.tpFinal.interfaces.BookingCancelledObserver;
 
@@ -26,6 +27,7 @@ public class BookingSystemTest {
 	private Booking mockBooking;
 	private Tenant mockTenant;
 	private City mockCity;
+	private EventPublisherImpl mockEventPublisher;
 
 	@BeforeEach
 	public void setUp() {
@@ -34,8 +36,9 @@ public class BookingSystemTest {
 		mockBooking = mock(Booking.class);
 		mockTenant = mock(Tenant.class);
 		mockCity = mock(City.class);
+		mockEventPublisher = mock(EventPublisherImpl.class);
 
-		bookingSystem = new BookingSystem(mockCancelledObservers, mockAcceptedObservers);
+		bookingSystem = new BookingSystem(mockCancelledObservers, mockAcceptedObservers, mockEventPublisher);
 	}
 
 	@Test
