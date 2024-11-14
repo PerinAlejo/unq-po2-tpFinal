@@ -7,35 +7,84 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import unq.po2.tpFinal.domain.Booking;
+import unq.po2.tpFinal.domain.City;
+import unq.po2.tpFinal.domain.Housing;
+import unq.po2.tpFinal.domain.Tenant;
+import unq.po2.tpFinal.implementations.BookingConditionalStrategy;
+import unq.po2.tpFinal.implementations.BookingConfirmedStrategy;
+import unq.po2.tpFinal.interfaces.BookingAcceptedObserver;
+import unq.po2.tpFinal.interfaces.BookingCancelledObserver;
+import unq.po2.tpFinal.interfaces.BookingStrategy;
+
+import java.util.*;
+
 public class BookingSystem implements BookingAcceptedObserver {		
 	
-	private Set<Booking> bookings;	
+	private Set<Booking> confirmedBookings;
+	private Map<Housing, Queue<Booking>> conditionalBookings;
 	public List<BookingCancelledObserver> bookingCancelledObservers;
+	public List<BookingAcceptedObserver> bookingAcceptedObservers;
 	
-	public BookingSystem(List<BookingCancelledObserver> bookingCancelledObserver) {
+	public BookingSystem(List<BookingCancelledObserver> bookingCancelledObserver, List<BookingAcceptedObserver> bookingAcceptedObserver) {
 		
-		bookings = new HashSet<Booking>();
+		confirmedBookings = new HashSet<Booking>();
+		conditionalBookings = new HashMap<>();
 		this.bookingCancelledObservers = bookingCancelledObserver;
+		this.bookingAcceptedObservers = bookingAcceptedObserver;
 	}
 
 	@Override
-	public void notifyBookingAccepted(Booking booking) {		
-		bookings.add(booking);		
+	public void notifyBookingAccepted(Booking booking) {
+		processBooking(booking);		
 	}
 	
+	public void processBooking(Booking booking) {
+        BookingStrategy strategy;
+
+        if (isHousingAvailable(booking)) {
+            strategy = new BookingConfirmedStrategy(confirmedBookings);
+        } else {
+            strategy = new BookingConditionalStrategy(conditionalBookings);
+        }
+
+        strategy.process(booking);
+    }
+	
+	private boolean isHousingAvailable(Booking booking) {
+        return confirmedBookings.stream()
+            .noneMatch(b -> b.getHousing().equals(booking.getHousing()) &&
+                            b.getRange().overlaps(booking.getRange()));
+    }
+	
 	public void cancelBooking(Booking booking) {
-		this.bookings.remove(booking);
+		this.confirmedBookings.remove(booking);
 		this.bookingCancelledObservers.forEach(observer -> observer.notifyBookingCancelled(booking));
+		
+		booking.cancelBook();
+		
+		//si existe proceso la siguiente reserva condicional en la cola
+        Queue<Booking> waitlist = conditionalBookings.get(booking.getHousing());
+        if (waitlist != null && !waitlist.isEmpty()) {
+            Booking nextBooking = waitlist.poll();
+            new BookingConfirmedStrategy(confirmedBookings).process(nextBooking);
+            notifyObserversBookingAccepted(nextBooking);
+            booking.acceptBook();
+        }
+	}
+	
+	private void notifyObserversBookingAccepted(Booking booking) {
+	    this.bookingAcceptedObservers.forEach(observer -> observer.notifyBookingAccepted(booking));
 	}
 	
 	public List<Booking> getAllBookings(Tenant tenant){
-		return bookings.stream()
+		return confirmedBookings.stream()
 				.filter(booking-> booking.getTenant().equals(tenant))
 				.toList();
 	}
 	
 	public List<Booking> getAllBookings(){
-		return bookings.stream().toList();
+		return confirmedBookings.stream().toList();
 	}
 	
 	public List<Booking> getFutureBookings(Tenant tenant){

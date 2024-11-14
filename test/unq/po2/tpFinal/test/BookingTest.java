@@ -5,7 +5,10 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import unq.po2.tpFinal.*;
+import unq.po2.tpFinal.domain.*;
+import unq.po2.tpFinal.interfaces.BookingAcceptedObserver;
+import unq.po2.tpFinal.interfaces.PaymentMethod;
+import unq.po2.tpFinal.interfaces.Ranker;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -13,93 +16,132 @@ import java.util.List;
 
 public class BookingTest {
 
-    private Booking booking;
-    private Housing mockHousing;
-    private Tenant mockTenant;
-    private DateRange mockDateRange;
-    private PaymentMethod PaymentMethod;
-    private City mockCity;
-    private Owner mockOwner;
+	private Booking booking;
+	private Housing mockHousing;
+	private Tenant mockTenant;
+	private DateRange mockDateRange;
+	private PaymentMethod mockPaymentMethod;
+	private City mockCity;
+	private Owner mockOwner;
+	private BookingAcceptedObserver mockObserver;
 
-    @BeforeEach
-    public void setUp() {
-        // Crear mocks
-        mockHousing = mock(Housing.class);
-        mockTenant = mock(Tenant.class);
-        mockDateRange = mock(DateRange.class);
-        PaymentMethod = PaymentMethod.Cash;
-        mockCity = mock(City.class);
-        mockOwner = mock(Owner.class);
+	@BeforeEach
+	public void setUp() {
+		mockHousing = mock(Housing.class);
+		mockTenant = mock(Tenant.class);
+		mockDateRange = mock(DateRange.class);
+		mockPaymentMethod = mock(PaymentMethod.class);
+		mockCity = mock(City.class);
+		mockOwner = mock(Owner.class);
+		mockObserver = mock(BookingAcceptedObserver.class);
 
-        // Configurar el comportamiento de los mocks
-        when(mockHousing.getOwner()).thenReturn(mockOwner);
-        when(mockHousing.getCity()).thenReturn(mockCity);
-        
-        // Inicializar la clase Booking
-        booking = new Booking(mockHousing, mockTenant, mockDateRange, PaymentMethod);
-    }
+		when(mockHousing.getOwner()).thenReturn(mockOwner);
+		when(mockHousing.getCity()).thenReturn(mockCity);
 
-    @Test
-    public void testGetTenant() {
-        assertEquals(mockTenant, booking.getTenant());
-    }
+		booking = new Booking(mockHousing, mockTenant, mockDateRange, mockPaymentMethod);
+	}
 
-    @Test
-    public void testGetHousing() {
-        assertEquals(mockHousing, booking.getHousing());
-    }
+	@Test
+	public void testGetTenant() {
+		assertEquals(mockTenant, booking.getTenant());
+	}
 
-    @Test
-    public void testGetOwner() {
-        User owner = booking.getOwner();
-        assertNotNull(owner);
-        verify(mockHousing).getOwner();
-    }
+	@Test
+	public void testGetHousing() {
+		assertEquals(mockHousing, booking.getHousing());
+	}
 
-    @Test
-    public void testCheckOut() {
-        List<Ranking> rankings = new ArrayList<>();
-        Ranking mockRanking = mock(Ranking.class);
-        rankings.add(mockRanking);
-        
-        // Simular el comportamiento de ranking
-        when(mockRanking.getRanker()).thenReturn(mock(Ranker.class));
-        
-        booking.checkOut(rankings);
-        
-        // Verificar que se haya llamado al método rank
-        verify(mockRanking.getRanker()).rank(mockRanking);
-    }
+	@Test
+	public void testGetOwner() {
+		Owner owner = booking.getOwner();
+		assertNotNull(owner);
+		verify(mockHousing).getOwner();
+	}
 
-    @Test
-    public void testStartsAfter() {
-        LocalDate date = LocalDate.now();
-        when(mockDateRange.startsAfter(date)).thenReturn(true);
-        
-        assertTrue(booking.startsAfter(date));
-        verify(mockDateRange).startsAfter(date);
-    }
+	@Test
+	public void testCheckOut() {
+		List<Ranking> rankings = new ArrayList<>();
+		Ranking mockRanking = mock(Ranking.class);
+		rankings.add(mockRanking);
 
-    @Test
-    public void testIsOnCity() {
-        when(mockHousing.isLocatedIn(mockCity)).thenReturn(true);
-        
-        assertTrue(booking.isOnCity(mockCity));
-        verify(mockHousing).isLocatedIn(mockCity);
-    }
+		when(mockRanking.getRanker()).thenReturn(mock(Ranker.class));
 
-    @Test
-    public void testGetCity() {
-        assertEquals(mockCity, booking.getCity());
-        verify(mockHousing).getCity();
-    }
+		booking.checkOut(rankings);
+		verify(mockRanking.getRanker()).rank(mockRanking);
+	}
 
-    @Test
-    public void testIsBookedOn() {
-        LocalDate date = LocalDate.now();
-        when(mockDateRange.contains(date)).thenReturn(true);
-        
-        assertTrue(booking.isBookedOn(date));
-        verify(mockDateRange).contains(date);
-    }
+	@Test
+	public void testStartsAfter() {
+		LocalDate date = LocalDate.now();
+		when(mockDateRange.startsAfter(date)).thenReturn(true);
+
+		assertTrue(booking.startsAfter(date));
+		verify(mockDateRange).startsAfter(date);
+	}
+
+	@Test
+	public void testIsOnCity() {
+		when(mockHousing.isLocatedIn(mockCity)).thenReturn(true);
+
+		assertTrue(booking.isOnCity(mockCity));
+		verify(mockHousing).isLocatedIn(mockCity);
+	}
+
+	@Test
+	public void testGetCity() {
+		assertEquals(mockCity, booking.getCity());
+		verify(mockHousing).getCity();
+	}
+
+	@Test
+	public void testIsBookedOn() {
+		LocalDate date = LocalDate.now();
+		when(mockDateRange.contains(date)).thenReturn(true);
+
+		assertTrue(booking.isBookedOn(date));
+		verify(mockDateRange).contains(date);
+	}
+
+	@Test
+	public void testGetRange() {
+		assertEquals(mockDateRange, booking.getRange());
+	}
+
+	@Test
+	public void testAddObserver() {
+		booking.addObserver(mockObserver);
+		booking.acceptBook();
+		verify(mockObserver).notifyBookingAccepted(booking);
+	}
+
+	@Test
+	public void testRemoveObserver() {
+		booking.addObserver(mockObserver);
+		booking.removeObserver(mockObserver);
+		booking.acceptBook();
+		verify(mockObserver, never()).notifyBookingAccepted(booking);
+	}
+
+	@Test
+	public void testAcceptBook() {
+		booking.addObserver(mockObserver);
+
+		booking.acceptBook();
+		verify(mockObserver).notifyBookingAccepted(booking);
+	}
+
+	@Test
+	public void testCancelBook() {
+		double cancellationFee = 100.0;
+		when(mockHousing.getCancelationFee(mockDateRange)).thenReturn(cancellationFee);
+		PaymentMethod defaultPaymentMethod = mock(PaymentMethod.class);
+		when(mockHousing.getDefaultPaymentMethod()).thenReturn(defaultPaymentMethod);
+
+		booking.cancelBook();
+
+		verify(mockPaymentMethod).applyCharge(cancellationFee);
+		verify(defaultPaymentMethod).applyCharge(cancellationFee);
+
+		verify(mockOwner).cancelBook(booking);
+	}
 }
