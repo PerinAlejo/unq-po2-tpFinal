@@ -4,10 +4,11 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import unq.po2.tpFinal.interfaces.BookingAcceptanceObservable;
 import unq.po2.tpFinal.interfaces.BookingAcceptedObserver;
 import unq.po2.tpFinal.interfaces.PaymentMethod;
 
-public class Booking {
+public class Booking implements BookingAcceptanceObservable {
 	private Housing housing;
 	private Tenant tenant;
 	private DateRange range;
@@ -39,11 +40,13 @@ public class Booking {
     	return this.range;
     }
     
-    public void addObserver(BookingAcceptedObserver observer) {
+    @Override
+	public void addObserver(BookingAcceptedObserver observer) {
     	this.bookingObservers.add(observer);
     }
     
-    public void removeObserver(BookingAcceptedObserver observer) {
+    @Override
+	public void removeObserver(BookingAcceptedObserver observer) {
     	this.bookingObservers.remove(observer);
     }
     
