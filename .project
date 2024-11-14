@@ -20,13 +20,6 @@
 		<nature>org.eclipse.m2e.core.maven2Nature</nature>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
-	<linkedResources>
-		<link>
-			<name>InformeTPFinal_Correa_Paredes_Perin.docx.pdf</name>
-			<type>1</type>
-			<location>C:/Users/Franco Paredes/Downloads/InformeTPFinal_Correa_Paredes_Perin.docx.pdf</location>
-		</link>
-	</linkedResources>
 	<filteredResources>
 		<filter>
 			<id>1729214366383</id>
