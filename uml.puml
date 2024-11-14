@@ -48,7 +48,7 @@ class Address {
 Address -->"1" Country:country
 Address -->"1" City:city
 
-class Booking {
+class Booking implements BookingAcceptanceObservable{
 
     + Booking(housing: Housing, tenant: Tenant, range: DateRange, paymentMethod: PaymentMethod)
     + getTenant(): Tenant
@@ -528,6 +528,11 @@ interface ReservationCancelledSubscriber {
 
 interface Service {
 	+ getName():String
+}
+
+interface BookingAcceptanceObservable {
+    + addObserver(observer: BookingAcceptedObserver ): void
+	+ removeObserver(observer: BookingAcceptedObserver ): void
 }
 
 @enduml
