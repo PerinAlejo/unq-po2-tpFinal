@@ -1,10 +1,5 @@
 @startuml tp
 class Admin {
-    - categories: Categories
-    - housingTypes: HousingTypes
-    - services: Services
-    - bookingSystem: BookingSystem
-    - housings: Set<Housing>
 
     + addCategory(category: Category): void
     + addHousingType(housing: HousingType): void
@@ -17,17 +12,13 @@ class Admin {
     - busyHousings(): Set<Housing>
 }
 
-Admin --> Categories :categories
-Admin --> HousingTypes :housingTypes
-Admin --> Services :services
-Admin --> BookingSystem :bookingSystem
-Admin --> Housing :housings
+Admin -->"1" Categories :categories
+Admin -->"1" HousingTypes :housingTypes
+Admin -->"1" Services :services
+Admin -->"1" BookingSystem :bookingSystem
+Admin -->"*" Housing :housings
 
 class BookingSystem implements BookingAcceptedObserver{
-    -confirmedBookings : Set<Booking>
-    -conditionalBookings : Map<Housing, Queue<Booking>>
-    +bookingCancelledObservers : List<BookingCancelledObserver>
-    +bookingAcceptedObservers : List<BookingAcceptedObserver>
 
     +notifyBookingAccepted(booking:Booking) : void
     +processBooking( booking:Booking) : void
@@ -41,30 +32,23 @@ class BookingSystem implements BookingAcceptedObserver{
     +getBookingCities( tenant:Tenant) :  List<City>
 }
 
-BookingSystem  -->  Booking : confirmedBookings
-BookingSystem  -->  Booking : conditionalBookings
-BookingSystem  -->  BookingCancelledObserver : bookingCancelledObservers
-BookingSystem  -->  Housing : conditionalBookings
-BookingSystem  -->  BookingAcceptedObserver : bookingAcceptedObservers
+BookingSystem  -->"*"  Booking : confirmedBookings
+BookingSystem  -->"*"  Booking : conditionalBookings
+BookingSystem  -->"*"  BookingCancelledObserver : bookingCancelledObservers
+BookingSystem  -->"*"  Housing : conditionalBookings
+BookingSystem  -->"*"  BookingAcceptedObserver : bookingAcceptedObservers
 
 class Address {
-    - country: Country
-    - city: City
     - houseLocation: String
 
     + getHouseLocation(): String
     + getCity(): City
     + getCountry(): Country
 }
-Address --> Country:country
-Address --> City:city
+Address -->"1" Country:country
+Address -->"1" City:city
 
 class Booking {
-    - housing: Housing
-    - tenant: Tenant
-    - range: DateRange
-    - paymentMethod: PaymentMethod
-    - bookingObservers: List<BookingAcceptedObserver>
 
     + Booking(housing: Housing, tenant: Tenant, range: DateRange, paymentMethod: PaymentMethod)
     + getTenant(): Tenant
@@ -82,21 +66,20 @@ class Booking {
     + acceptBook(): void
 }
 
-Booking --> Housing : housing
-Booking --> Tenant : tenant
-Booking --> DateRange : range
-Booking --> PaymentMethod : paymentMethod
-Booking --> BookingAcceptedObserver : bookingObservers
+Booking -->"1" Housing : housing
+Booking -->"1" Tenant : tenant
+Booking -->"1" DateRange : range
+Booking -->"1" PaymentMethod : paymentMethod
+Booking -->"*" BookingAcceptedObserver : bookingObservers
 
 abstract class CancellationPolicy {
-    - housing: Housing
 
     + CancellationPolicy(housing: Housing)
     + getHousing(): Housing
     + getCancellationFee(range: DateRange): double
 }
 
-CancellationPolicy --> Housing : housing
+CancellationPolicy -->"1" Housing : housing
 
 class Category {
     - name: String
@@ -106,7 +89,6 @@ class Category {
 }
 
 class CategoryScore {
-    - category: Category
     - score: int
 
     + CategoryScore(category: Category, score: int)
@@ -114,7 +96,7 @@ class CategoryScore {
     + getScore(): int
 }
 
-CategoryScore --> Category : category
+CategoryScore -->"1" Category : category
 
 class City {
     - name: String
@@ -145,19 +127,8 @@ class DateRange {
 
 
 class Housing implements Rankeable {
-    - housingType: HousingType
     - area: float
-    - address: Address
-    - services: List<Service>
     - capacity: int
-    - pictures: List<Picture>
-    - stayDetails: HousingStayDetails
-    - paymentMethods: List<PaymentMethod>
-    - defaultPaymentMethod: PaymentMethod
-    - priceCalculator: PriceCalculatorInterface
-    - rankings: List<Ranking>
-    - owner: Owner
-    - cancellationPolicy: CancellationPolicy
 
     + Housing(housingType: HousingType, area: float, address: Address, services: List<Service>, 
               capacity: int, pictures: List<Picture>, stayDetails: HousingStayDetails, 
@@ -176,17 +147,17 @@ class Housing implements Rankeable {
     + getDefaultPaymentMethod(): PaymentMethod
 }
 
-Housing --> HousingType : housingType
-Housing --> Address : address
-Housing --> Service : services
-Housing --> Picture : pictures
-Housing --> HousingStayDetails : stayDetails
-Housing --> PaymentMethod : paymentMethods
-Housing --> PaymentMethod : defaultPaymentMethod
-Housing --> PriceCalculatorInterface : priceCalculator
-Housing --> Ranking : rankings
-Housing --> Owner : owner
-Housing --> CancellationPolicy : cancellationPolicy
+Housing -->"1" HousingType : housingType
+Housing -->"1" Address : address
+Housing -->"*" Service : services
+Housing -->"*" Picture : pictures
+Housing -->"1" HousingStayDetails : stayDetails
+Housing -->"*" PaymentMethod : paymentMethods
+Housing -->"1" PaymentMethod : defaultPaymentMethod
+Housing -->"1" PriceCalculatorInterface : priceCalculator
+Housing -->"*" Ranking : rankings
+Housing -->"1" Owner : owner
+Housing -->"1" CancellationPolicy : cancellationPolicy
 
 class HousingStayDetails {
     - checkIn: LocalDateTime
@@ -205,9 +176,6 @@ class HousingType {
 }
 
 class Owner extends User implements Rankeable, Ranker{
-    - rankings: List<Ranking>
-    - rentals: List<Booking>
-    - bookingAcceptanceStrategy: BookingAcceptanceStrategy
 
     + Owner(fullName: String, email: String, phoneNumber: String, createdOn: LocalDateTime, bookingAcceptanceStrategy: BookingAcceptanceStrategy)
     + addRental(rental: Booking): void
@@ -219,9 +187,9 @@ class Owner extends User implements Rankeable, Ranker{
     + cancelBook(booking: Booking): void
 }
 
-Owner -->Ranking:rankings
-Owner -->Booking:rentals
-Owner -->BookingAcceptanceStrategy:bookingAcceptanceStrategy
+Owner -->"*" Ranking:rankings
+Owner -->"*" Booking:rentals
+Owner -->"1" BookingAcceptanceStrategy:bookingAcceptanceStrategy
 
 class Picture {
     - name: String
@@ -234,18 +202,14 @@ class Picture {
 
 class PriceForRange {
     - price: double
-    - range: DateRange
 
     + PriceForRange(price: double, range: DateRange)
     + getPriceForRange(range: DateRange): double
 }
 
-PriceForRange --> DateRange: range
+PriceForRange -->"1" DateRange: range
 
 class Ranking {
-    - ranker: Ranker
-    - ranked: Rankeable
-    - categoryScores: List<CategoryScore>
     - comment: String
     - rankedOn: LocalDate
 
@@ -257,12 +221,11 @@ class Ranking {
     + getRankedOn(): LocalDate
 }
 
-Ranking --> Ranker:ranker
-Ranking --> Rankeable:ranked
-Ranking --> CategoryScore:categoryScores
+Ranking -->"1" Ranker:ranker
+Ranking -->"1" Rankeable:ranked
+Ranking -->"*" CategoryScore:categoryScores
 
 class Tenant extends User implements Rankeable, Ranker{
-    - rankings: List<Ranking>
 
     + Tenant(fullName: String, email: String, phoneNumber: String, createdOn: LocalDateTime)
     + addRanking(ranking: Ranking): void
@@ -271,7 +234,7 @@ class Tenant extends User implements Rankeable, Ranker{
     + book(housing: Housing, range: DateRange, paymentMethod: PaymentMethod, observers: List<BookingAcceptedObserver>): void
 }
 
-Tenant --> Ranking:rankings
+Tenant -->"*" Ranking:rankings
 
 class User {
     - fullName: String
@@ -287,32 +250,29 @@ class User {
 }
 
 class BookingConditionalStrategy implements BookingStrategy{
-    - conditionalBookings: Map<Housing, Queue<Booking>>
 
     + BookingConditionalStrategy(conditionalBookings: Map<Housing, Queue<Booking>>)
     + process(booking: Booking): void
 }
 
-BookingConditionalStrategy --> Booking :conditionalBookings
-BookingConditionalStrategy --> Housing :conditionalBookings
+BookingConditionalStrategy -->"*" Booking :conditionalBookings
+BookingConditionalStrategy -->"*" Housing :conditionalBookings
 
 class BookingConfirmedStrategy implements BookingStrategy{
-    - confirmedBookings: Set<Booking>
 
     + BookingConfirmedStrategy(confirmedBookings: Set<Booking>)
     + process(booking: Booking): void
 }
 
-confirmedBookings --> Booking: confirmedBookings
+confirmedBookings -->"*" Booking: confirmedBookings
 
 class CancellationEmailSender implements BookingCancelledObserver{
-    - emailSender: EmailSender
 
     + CancellationEmailSender(emailSender: EmailSender)
     + notifyBookingCancelled(booking: Booking): void
 }
 
-CancellationEmailSender --> EmailSender:emailSender
+CancellationEmailSender -->"1" EmailSender:emailSender
 
 class Cash  implements PaymentMethod{
     + applyCharge(amount: double): void
@@ -320,11 +280,10 @@ class Cash  implements PaymentMethod{
 }
 
 class ConfirmationEmailSender  implements BookingAcceptedObserver{
-    - emailSender: EmailSender
     + notifyBookingAccepted(booking: Booking): void
 }
 
-ConfirmationEmailSender --> EmailSender:emailSender
+ConfirmationEmailSender -->"1" EmailSender:emailSender
 
 class CreditCard implements PaymentMethod{
     + applyCharge(amount: double): void
@@ -337,9 +296,6 @@ class DebitCard implements PaymentMethod {
 }
 
 class EventPublisherImpl implements EventPublisher{
-    - priceDropSubscribers: List<PriceDropSubscriber>
-    - reservationCancelledSubscribers: List<ReservationCancelledSubscriber>
-    - reservationAcceptedSubscribers: List<ReservationAcceptedSubscriber>
 
     + subscribeToPriceDrop(subscriber: PriceDropSubscriber): void
     + unsubscribeFromPriceDrop(subscriber: PriceDropSubscriber): void
@@ -352,9 +308,9 @@ class EventPublisherImpl implements EventPublisher{
     + notifyReservationAccepted(booking: Booking): void
 }
 
-EventPublisherImpl --> PriceDropSubscriber:priceDropSubscribers
-EventPublisherImpl --> ReservationCancelledSubscriber:reservationCancelledSubscribers
-EventPublisherImpl --> ReservationAcceptedSubscriber:reservationAcceptedSubscribers
+EventPublisherImpl -->"*" PriceDropSubscriber:priceDropSubscribers
+EventPublisherImpl -->"*" ReservationCancelledSubscriber:reservationCancelledSubscribers
+EventPublisherImpl -->"*" ReservationAcceptedSubscriber:reservationAcceptedSubscribers
 
 class FreeCancellation extends CancellationPolicy{
     - MAX_DAYS_FOR_FREE_CANCELLATION: int
@@ -372,12 +328,11 @@ class NoCancellation extends CancellationPolicy{
 }
 
 class PriceCalculatorImpl implements PriceCalculatorInterface{
-    - priceForRanges: List<PriceForRange>
 
     + getPrice(range: DateRange): double
 }
 
-PriceCalculatorImpl-->PriceForRange:priceForRanges
+PriceCalculatorImpl -->"*" PriceForRange:priceForRanges
 
 class CapacityFilter implements SearchFilter{
     - capacity: int
@@ -386,49 +341,44 @@ class CapacityFilter implements SearchFilter{
 }
 
 class CityFilter implements SearchFilter{
-    - city: City
 
     + filter(housingList: List<Housing>): List<Housing>
 }
+
+CityFilter -->"1" City : city
 
 class DateRangeFilter implements SearchFilter{
-    - dateRange: DateRange
 
     + filter(housingList: List<Housing>): List<Housing>
 }
 
-DateRangeFilter --> DateRange:dateRange
+DateRangeFilter -->"1" DateRange:dateRange
 
 class HousingSearch implements SearchFilter{
-    - filterList: List<SearchFilter>
 
     + filter(housingList: List<Housing>): List<Housing>
 }
 
-HousingSearch-->SearchFilter:filterList
+HousingSearch -->"*" SearchFilter:filterList
 
 
 class MinPriceFilter implements SearchFilter{
     - minPrice: double
-    - dateRange: DateRange
     
     + filter(housingList: List<Housing>): List<Housing>
 }
 
-MinPriceFilter --> DateRange:dateRange
+MinPriceFilter -->"1" DateRange:dateRange
 
 class MaxPriceFilter implements SearchFilter{
     - maxPrice: double
-    - dateRange: DateRange
     
     + filter(housingList: List<Housing>): List<Housing>
 }
 
-MaxPriceFilter --> DateRange:dateRange
+MaxPriceFilter -->"1" DateRange:dateRange
 
 class HousingSearchBuilder {
-    - filterList: List<HousingSearchBuilder>
-    - dateRange: DateRange
 
     + HousingSearchBuilder(city: City, dateRange: DateRange)
     + setCapacity(capacity: int): HousingSearchBuilder
@@ -437,25 +387,22 @@ class HousingSearchBuilder {
     + build(): SearchFilter
 }
 
-HousingSearchBuilder --> HousingSearchBuilder:filterList
-HousingSearchBuilder --> DateRange: dateRange
+HousingSearchBuilder -->"*" HousingSearchBuilder:filterList
+HousingSearchBuilder -->"1" DateRange: dateRange
 
 class CategoryAverageView {
     - average: double
-    - category: Category
 
     + CategoryAverageView(average: double, category: Category)
     + getAverage(): double
     + getCategory(): Category
 }
 
-CategoryAverageView -->Category: category
+CategoryAverageView -->"1" Category: category
 
 class CommentView {
     - text: String
     - commentedOn: LocalDate
-    - by: Ranker
-    - scores: List<CategoryScore>
 
     + CommentView(text: String, commentedOn: LocalDate, by: Ranker, scores: List<CategoryScore>)
     + fromRanking(ranking: Ranking): CommentView
@@ -465,11 +412,10 @@ class CommentView {
     + getScores(): List<CategoryScore>
 }
 
-CommentView --> Ranker: by
-CommentView --> CategoryScore:scores
+CommentView -->"1" Ranker: by
+CommentView -->"*" CategoryScore:scores
 
 class HousingView {
-    - housing: Housing
 
     + HousingView(housing: Housing)
     + comments(): List<CommentView>
@@ -477,11 +423,9 @@ class HousingView {
     + ownerDetails(): OwnerView
 }
 
-HousingView -->Housing: housing
+HousingView -->"1" Housing: housing
 
 class OwnerRentalView {
-    - owner: Owner
-    - housing: Housing
 
     + OwnerRentalView(owner: Owner, currentHousing: Housing)
     + getTotalRentsForHousing(): long
@@ -490,13 +434,11 @@ class OwnerRentalView {
     + getRentalsForCurrentHousing(): List<Housing>
 }
 
-OwnerRentalView -->Owner: owner
-OwnerRentalView -->Housing: housing
+OwnerRentalView -->"1" Owner: owner
+OwnerRentalView -->"1" Housing: housing
 
 
 class OwnerView {
-    - owner: Owner
-    - currentHousing: Housing
 
     + OwnerView(owner: Owner, currentHousing: Housing)
     + getAllScores(): List<Integer>
@@ -505,9 +447,8 @@ class OwnerView {
     + getOwnerRentalView(): OwnerRentalView
 }
 
-OwnerView -->Owner: owner
-OwnerView -->Housing: currentHousing
-
+OwnerView -->"1" Owner: owner
+OwnerView -->"1" Housing: currentHousing
 
 
 
