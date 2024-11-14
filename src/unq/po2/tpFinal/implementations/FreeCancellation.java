@@ -26,6 +26,6 @@ public class FreeCancellation extends CancellationPolicy {
 	}
 
 	private DateRange twoDaysRange(DateRange range) {
-		return new DateRange(range.getStart(), range.getStart().plusDays(2));
+		return new DateRange(range.getStart(), 2);
 	}
 }

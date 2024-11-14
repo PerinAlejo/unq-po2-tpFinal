@@ -6,9 +6,9 @@ public class DateRange {
     private LocalDate start;
     private LocalDate end;
 
-    public DateRange(LocalDate start, LocalDate end) {
+    public DateRange(LocalDate start, int duration) {
         this.start = start;
-        this.end = end;
+        this.end = start.plusDays(duration);
     }
 
     public LocalDate getStart() {
