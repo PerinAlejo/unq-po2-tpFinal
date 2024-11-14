@@ -27,15 +27,15 @@ public class FreeCancellationsTest {
 
     @Test
     public void testGetCancellationFeeFreeCancellationPeriod() {
-        DateRange range = new DateRange(LocalDate.now().plusDays(15), LocalDate.now().plusDays(20));
+        DateRange range = new DateRange(LocalDate.now(), 5);
         double fee = freeCancellation.getCancellationFee(range);
         assertEquals(0.0, fee, 0.01);
     }
 
     @Test
     public void testGetCancellationFeeWithinChargeablePeriod() {
-        DateRange range = new DateRange(LocalDate.now().plusDays(5), LocalDate.now().plusDays(10));
-        DateRange twoDayRange = new DateRange(range.getStart(), range.getStart().plusDays(2));
+        DateRange range = new DateRange(LocalDate.now(), 5);
+        DateRange twoDayRange = new DateRange(range.getStart(), 2);
 
         when(housingMock.getPrice(argThat(matchesDateRange(twoDayRange)))).thenReturn(150.0);
 
@@ -45,8 +45,8 @@ public class FreeCancellationsTest {
 
     @Test
     public void testGetCancellationFeeWhenStartDateIsToday() {
-        DateRange range = new DateRange(LocalDate.now(), LocalDate.now().plusDays(5));
-        DateRange twoDayRange = new DateRange(range.getStart(), range.getStart().plusDays(2));
+        DateRange range = new DateRange(LocalDate.now(), 5);
+        DateRange twoDayRange = new DateRange(range.getStart(), 2);
 
         when(housingMock.getPrice(argThat(matchesDateRange(twoDayRange)))).thenReturn(200.0);
 
@@ -56,8 +56,8 @@ public class FreeCancellationsTest {
 
     @Test
     public void testGetCancellationFeePastStartDate() {
-        DateRange range = new DateRange(LocalDate.now().minusDays(1), LocalDate.now().plusDays(5));
-        DateRange twoDayRange = new DateRange(range.getStart(), range.getStart().plusDays(2));
+        DateRange range = new DateRange(LocalDate.now().minusDays(1), 4);
+        DateRange twoDayRange = new DateRange(range.getStart(), 2);
 
         when(housingMock.getPrice(argThat(matchesDateRange(twoDayRange)))).thenReturn(300.0);
 

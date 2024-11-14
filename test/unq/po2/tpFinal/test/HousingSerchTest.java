@@ -34,7 +34,7 @@ class HousingSerchTest {
 		housing3 = mock(Housing.class);
 
 		city = new City("New York");
-		date = new DateRange(LocalDate.of(2024, 12, 1), LocalDate.of(2024, 12, 1));
+		date = new DateRange(LocalDate.of(2024, 12, 1), 0);
 
 	}
 

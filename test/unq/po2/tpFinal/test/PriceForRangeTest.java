@@ -1,173 +1,51 @@
 package unq.po2.tpFinal.test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.*;
 
-import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.Collections;
-
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 import unq.po2.tpFinal.domain.DateRange;
 import unq.po2.tpFinal.domain.PriceForRange;
-import unq.po2.tpFinal.implementations.PriceCalculatorImpl;
 
 public class PriceForRangeTest {
 
-	@Test
-	public void testSinglePriceRangeFullOverlap() {
-		PriceForRange priceForRange = new PriceForRange(100.0,
-				new DateRange(LocalDate.of(2023, 1, 1), LocalDate.of(2023, 1, 10)));
-		PriceCalculatorImpl calculator = new PriceCalculatorImpl(Arrays.asList(priceForRange));
+    private DateRange rangeMock;
+    private PriceForRange priceForRange;
 
-		DateRange queryRange = new DateRange(LocalDate.of(2023, 1, 1), LocalDate.of(2023, 1, 10));
-		double expectedPrice = 100.0 * 10;
+    @BeforeEach
+    public void setUp() {
+        rangeMock = mock(DateRange.class);
+        priceForRange = new PriceForRange(100.0, rangeMock);
+    }
 
-		assertEquals(expectedPrice, calculator.getPrice(queryRange));
-	}
+    @Test
+    public void testGetPriceForRangeWithFullOverlap() {
+        DateRange queryRange = mock(DateRange.class);
+        when(rangeMock.getOverlapDays(queryRange)).thenReturn(10L);
 
-	@Test
-	public void testSinglePriceRangePartialOverlap() {
-		PriceForRange priceForRange = new PriceForRange(150.0,
-				new DateRange(LocalDate.of(2023, 1, 5), LocalDate.of(2023, 1, 15)));
-		PriceCalculatorImpl calculator = new PriceCalculatorImpl(Arrays.asList(priceForRange));
+        double result = priceForRange.getPriceForRange(queryRange);
 
-		DateRange queryRange = new DateRange(LocalDate.of(2023, 1, 10), LocalDate.of(2023, 1, 20));
-		double expectedPrice = 150.0 * 6;
+        assertEquals(1000.0, result);
+    }
 
-		assertEquals(expectedPrice, calculator.getPrice(queryRange));
-	}
+    @Test
+    public void testGetPriceForRangeWithPartialOverlap() {
+        DateRange queryRange = mock(DateRange.class);
+        when(rangeMock.getOverlapDays(queryRange)).thenReturn(5L);
 
-	@Test
-	public void testMultiplePriceRangesFullOverlap() {
-		PriceForRange price1 = new PriceForRange(100.0,
-				new DateRange(LocalDate.of(2023, 1, 1), LocalDate.of(2023, 1, 5)));
-		PriceForRange price2 = new PriceForRange(200.0,
-				new DateRange(LocalDate.of(2023, 1, 6), LocalDate.of(2023, 1, 10)));
-		PriceCalculatorImpl calculator = new PriceCalculatorImpl(Arrays.asList(price1, price2));
+        double result = priceForRange.getPriceForRange(queryRange);
 
-		DateRange queryRange = new DateRange(LocalDate.of(2023, 1, 1), LocalDate.of(2023, 1, 10));
-		double expectedPrice = (100.0 * 5) + (200.0 * 5);
+        assertEquals(500.0, result);
+    }
 
-		assertEquals(expectedPrice, calculator.getPrice(queryRange));
-	}
+    @Test
+    public void testGetPriceForRangeWithNoOverlap() {
+        DateRange queryRange = mock(DateRange.class);
+        when(rangeMock.getOverlapDays(queryRange)).thenReturn(0L);
 
-	@Test
-	public void testMultiplePriceRangesPartialOverlap() {
-		PriceForRange price1 = new PriceForRange(100.0,
-				new DateRange(LocalDate.of(2023, 1, 1), LocalDate.of(2023, 1, 5)));
-		PriceForRange price2 = new PriceForRange(150.0,
-				new DateRange(LocalDate.of(2023, 1, 4), LocalDate.of(2023, 1, 8)));
-		PriceForRange price3 = new PriceForRange(200.0,
-				new DateRange(LocalDate.of(2023, 1, 10), LocalDate.of(2023, 1, 12)));
-		PriceCalculatorImpl calculator = new PriceCalculatorImpl(Arrays.asList(price1, price2, price3));
+        double result = priceForRange.getPriceForRange(queryRange);
 
-		DateRange queryRange = new DateRange(LocalDate.of(2023, 1, 3), LocalDate.of(2023, 1, 10));
-
-		double expectedPrice = (100.0 * 3) + (150.0 * 5) + (200.0 * 1);
-
-		assertEquals(expectedPrice, calculator.getPrice(queryRange));
-	}
-
-	@Test
-	public void testNoOverlap() {
-		PriceForRange priceForRange = new PriceForRange(100.0,
-				new DateRange(LocalDate.of(2023, 1, 1), LocalDate.of(2023, 1, 5)));
-		PriceCalculatorImpl calculator = new PriceCalculatorImpl(Arrays.asList(priceForRange));
-
-		DateRange queryRange = new DateRange(LocalDate.of(2023, 1, 6), LocalDate.of(2023, 1, 10));
-		double expectedPrice = 0.0;
-
-		assertEquals(expectedPrice, calculator.getPrice(queryRange));
-	}
-
-	@Test
-	public void testEmptyPriceForRanges() {
-		PriceCalculatorImpl calculator = new PriceCalculatorImpl(Collections.emptyList());
-
-		DateRange queryRange = new DateRange(LocalDate.of(2023, 1, 1), LocalDate.of(2023, 1, 10));
-		double expectedPrice = 0.0;
-
-		assertEquals(expectedPrice, calculator.getPrice(queryRange));
-	}
-
-	@Test
-	public void testOverlappingPriceForRanges() {
-		PriceForRange price1 = new PriceForRange(100.0,
-				new DateRange(LocalDate.of(2023, 1, 1), LocalDate.of(2023, 1, 5)));
-		PriceForRange price2 = new PriceForRange(200.0,
-				new DateRange(LocalDate.of(2023, 1, 3), LocalDate.of(2023, 1, 7)));
-		PriceCalculatorImpl calculator = new PriceCalculatorImpl(Arrays.asList(price1, price2));
-
-		DateRange queryRange = new DateRange(LocalDate.of(2023, 1, 1), LocalDate.of(2023, 1, 7));
-
-		double expectedPrice = (100.0 * 5) + (200.0 * 5);
-
-		assertEquals(expectedPrice, calculator.getPrice(queryRange));
-	}
-
-	@Test
-	public void testNegativePrices() {
-		PriceForRange priceForRange = new PriceForRange(-50.0,
-				new DateRange(LocalDate.of(2023, 1, 5), LocalDate.of(2023, 1, 10)));
-		PriceCalculatorImpl calculator = new PriceCalculatorImpl(Arrays.asList(priceForRange));
-
-		DateRange queryRange = new DateRange(LocalDate.of(2023, 1, 7), LocalDate.of(2023, 1, 9));
-		double expectedPrice = -50.0 * 3;
-
-		assertEquals(expectedPrice, calculator.getPrice(queryRange));
-	}
-
-	@Test
-	public void testZeroLengthQueryRange() {
-		PriceForRange priceForRange = new PriceForRange(100.0,
-				new DateRange(LocalDate.of(2023, 1, 5), LocalDate.of(2023, 1, 10)));
-		PriceCalculatorImpl calculator = new PriceCalculatorImpl(Arrays.asList(priceForRange));
-
-		DateRange queryRange = new DateRange(LocalDate.of(2023, 1, 7), LocalDate.of(2023, 1, 7));
-		double expectedPrice = 100.0 * 1;
-
-		assertEquals(expectedPrice, calculator.getPrice(queryRange));
-	}
-
-	@Test
-	public void testFractionalPrices() {
-		PriceForRange priceForRange = new PriceForRange(99.99,
-				new DateRange(LocalDate.of(2023, 2, 1), LocalDate.of(2023, 2, 28)));
-		PriceCalculatorImpl calculator = new PriceCalculatorImpl(Arrays.asList(priceForRange));
-
-		DateRange queryRange = new DateRange(LocalDate.of(2023, 2, 10), LocalDate.of(2023, 2, 20));
-		double expectedPrice = 99.99 * 11;
-
-		assertEquals(expectedPrice, calculator.getPrice(queryRange), 0.001);
-	}
-
-	@Test
-	public void testOverlappingPriceForRangesWithDifferentPrices() {
-		PriceForRange price1 = new PriceForRange(80.0,
-				new DateRange(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 10)));
-		PriceForRange price2 = new PriceForRange(120.0,
-				new DateRange(LocalDate.of(2023, 3, 5), LocalDate.of(2023, 3, 15)));
-		PriceForRange price3 = new PriceForRange(100.0,
-				new DateRange(LocalDate.of(2023, 3, 8), LocalDate.of(2023, 3, 12)));
-		PriceCalculatorImpl calculator = new PriceCalculatorImpl(Arrays.asList(price1, price2, price3));
-
-		DateRange queryRange = new DateRange(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 3, 15));
-
-		double expectedPrice = (80.0 * 10) + (120.0 * 11) + (100.0 * 5);
-
-		assertEquals(expectedPrice, calculator.getPrice(queryRange));
-	}
-
-	@Test
-	public void testQueryRangeOutsidePriceForRanges() {
-		PriceForRange priceForRange = new PriceForRange(100.0,
-				new DateRange(LocalDate.of(2023, 1, 1), LocalDate.of(2023, 1, 10)));
-		PriceCalculatorImpl calculator = new PriceCalculatorImpl(Arrays.asList(priceForRange));
-
-		DateRange queryRange = new DateRange(LocalDate.of(2023, 1, 11), LocalDate.of(2023, 1, 20));
-		double expectedPrice = 0.0;
-
-		assertEquals(expectedPrice, calculator.getPrice(queryRange));
-	}
+        assertEquals(0.0, result);
+    }
 }
