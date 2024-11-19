@@ -11,7 +11,7 @@ import unq.po2.tpFinal.domain.Housing;
 import unq.po2.tpFinal.domain.Owner;
 import unq.po2.tpFinal.domain.Ranking;
 import unq.po2.tpFinal.domain.Tenant;
-import unq.po2.tpFinal.interfaces.BookingAcceptedObserver;
+import unq.po2.tpFinal.interfaces.HousingObserver;
 import unq.po2.tpFinal.interfaces.PaymentMethod;
 
 import java.time.LocalDateTime;
@@ -26,7 +26,7 @@ public class TenantTest {
     private Owner mockOwner;
     private DateRange mockDateRange;
     private PaymentMethod paymentMethod;
-    private List<BookingAcceptedObserver> observers;
+    private List<HousingObserver> observers;
     
     @BeforeEach
     public void setUp() {
@@ -82,7 +82,7 @@ public class TenantTest {
 
         doNothing().when(mockOwner).accept(mockBooking);
 
-        tenant.book(mockHousing, mockDateRange, paymentMethod, observers);
+        tenant.book(mockHousing, mockDateRange, paymentMethod);
 
         verify(mockOwner).accept(any(Booking.class));
     }

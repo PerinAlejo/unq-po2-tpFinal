@@ -10,23 +10,23 @@ import unq.po2.tpFinal.interfaces.Ranker;
 
 public class Owner extends User implements Rankeable, Ranker {
 	private List<Ranking> rankings;
-	private List<Booking> rentals;
+	private List<Booking> bookings;
 	private BookingAcceptanceStrategy bookingAcceptanceStrategy;
 
 	public Owner(String fullName, String email, String phoneNumber, LocalDateTime createdOn,
 			BookingAcceptanceStrategy bookingAcceptanceStrategy) {
 		super(fullName, email, phoneNumber, createdOn);
-		rentals = new ArrayList<Booking>();
+		bookings = new ArrayList<Booking>();
 		rankings = new ArrayList<Ranking>();
 		this.bookingAcceptanceStrategy = bookingAcceptanceStrategy;
 	}
 
 	public void addRental(Booking rental) {
-		this.rentals.add(rental);
+		this.bookings.add(rental);
 	}
 
 	public List<Booking> getRentals() {
-		return this.rentals;
+		return this.bookings;
 	}
 
 	@Override
@@ -46,12 +46,12 @@ public class Owner extends User implements Rankeable, Ranker {
 
 	public void accept(Booking booking) {
 		if (this.bookingAcceptanceStrategy.isAcceptable(booking)) {
-			booking.acceptBook();
+			booking.getHousing().book(booking);
 			this.addRental(booking);
 		}
 	}
 
 	public void cancelBook(Booking booking) {
-		this.rentals.remove(booking);
+		this.bookings.remove(booking);
 	}
 }
