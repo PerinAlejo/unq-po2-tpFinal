@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import unq.po2.tpFinal.domain.Booking;
+import unq.po2.tpFinal.domain.Housing;
 import unq.po2.tpFinal.domain.Owner;
 import unq.po2.tpFinal.domain.Ranking;
 import unq.po2.tpFinal.interfaces.BookingAcceptanceStrategy;
@@ -79,20 +80,23 @@ public class OwnerTest {
 
 	@Test
 	public void testAcceptBooking() {
-
+		Housing mockHousing = mock(Housing.class);
+		when(mockBooking.getHousing()).thenReturn(mockHousing);
 		when(mockAcceptanceStrategy.isAcceptable(mockBooking)).thenReturn(true);
 
 		owner.accept(mockBooking);
 
-		verify(mockBooking).acceptBook();
+		verify(mockHousing).book(mockBooking);
 	}
 
 	@Test
 	public void testAcceptBookingNotAccepted() {
+		Housing mockHousing = mock(Housing.class);
+		when(mockBooking.getHousing()).thenReturn(mockHousing);
 		when(mockAcceptanceStrategy.isAcceptable(mockBooking)).thenReturn(false);
 
 		owner.accept(mockBooking);
 
-		verify(mockBooking, never()).acceptBook();
+		verify(mockHousing, never()).book(mockBooking);
 	}
 }
