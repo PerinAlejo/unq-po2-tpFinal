@@ -14,10 +14,10 @@ public class MinPriceFilter implements SearchFilter {
 		this.minPrice = minPrice;
 		this.dateRange = dateRange;
 	}
-	
+
 	@Override
-	public List<Housing> filter(List<Housing> housingList) {
-		return housingList.stream().filter(housing -> housing.getPrice(this.dateRange) >= this.minPrice).toList();
+	public boolean test(Housing housing) {
+		return housing.getPrice(this.dateRange) >= this.minPrice;
 	}
 
 }

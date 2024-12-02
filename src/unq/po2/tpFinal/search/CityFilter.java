@@ -12,11 +12,10 @@ public class CityFilter implements SearchFilter{
 	public CityFilter( City city) {
 		this.city = city;
 	}
-	
-	@Override
-	public List<Housing> filter(List<Housing> housingList) {
 
-		return housingList.stream().filter(housing -> housing.isLocatedIn(city)).toList();
+	@Override
+	public boolean test(Housing housing) {
+		return housing.isLocatedIn(city);
 	}
 
 }

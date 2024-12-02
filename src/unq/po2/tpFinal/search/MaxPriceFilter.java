@@ -16,7 +16,7 @@ public class MaxPriceFilter implements SearchFilter {
 	}
 	
 	@Override
-	public List<Housing> filter(List<Housing> housingList) {
-		return housingList.stream().filter(housing -> housing.getPrice(this.dateRange) <= this.maxPrice).toList();
+	public boolean test(Housing housing) {
+		return housing.getPrice(this.dateRange) <= this.maxPrice;
 	}
 }
