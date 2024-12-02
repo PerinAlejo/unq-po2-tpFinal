@@ -14,8 +14,7 @@ import unq.po2.tpFinal.*;
 import unq.po2.tpFinal.domain.City;
 import unq.po2.tpFinal.domain.DateRange;
 import unq.po2.tpFinal.domain.Housing;
-import unq.po2.tpFinal.search.HousingSearchBuilder;
-import unq.po2.tpFinal.search.SearchFilter;
+import unq.po2.tpFinal.search.*;
 
 class HousingSerchTest {
 
@@ -52,7 +51,7 @@ class HousingSerchTest {
 		List<Housing> housings = Arrays.asList(housing1, housing2, housing3);
 
 		HousingSearchBuilder builder = new HousingSearchBuilder(city, date);
-		SearchFilter searchFilter = builder.build();
+		HousingSearch searchFilter = builder.build();
 
 		List<Housing> result = searchFilter.filter(housings);
 
@@ -79,7 +78,7 @@ class HousingSerchTest {
 		List<Housing> housings = Arrays.asList(housing1, housing2, housing3);
 
 		HousingSearchBuilder builder = new HousingSearchBuilder(city, date).setCapacity(4);
-		SearchFilter searchFilter = builder.build();
+		HousingSearch searchFilter = builder.build();
 
 		List<Housing> result = searchFilter.filter(housings);
 
@@ -106,7 +105,7 @@ class HousingSerchTest {
 		List<Housing> housings = Arrays.asList(housing1, housing2, housing3);
 
 		HousingSearchBuilder builder = new HousingSearchBuilder(city, date).setMinPrice(900.0).setMaxPrice(1500.0);
-		SearchFilter searchFilter = builder.build();
+		HousingSearch searchFilter = builder.build();
 
 		List<Housing> result = searchFilter.filter(housings);
 

@@ -34,7 +34,7 @@ public class HousingSearchBuilder {
 		return this;
 	}
 	
-	public SearchFilter build() {
+	public HousingSearch build() {
 		return new HousingSearch(this.filterList);
 	}
 	
