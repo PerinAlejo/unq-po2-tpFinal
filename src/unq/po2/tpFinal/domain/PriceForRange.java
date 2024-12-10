@@ -11,4 +11,12 @@ public class PriceForRange {
 	public double getPriceForRange(DateRange range) {
 		return this.range.getOverlapDays(range) * this.price;
 	}
+	
+	public double getPrice() {
+		return this.range.getDays() * this.price;
+	}
+	
+	public DateRange getRange() {
+		return this.range;
+	}
 }
