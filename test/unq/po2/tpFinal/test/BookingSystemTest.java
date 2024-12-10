@@ -4,6 +4,8 @@ import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 
 import unq.po2.tpFinal.*;
 import unq.po2.tpFinal.domain.Booking;
@@ -17,139 +19,84 @@ import unq.po2.tpFinal.interfaces.HousingObserver;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class BookingSystemTest {
-
-	private BookingSystem bookingSystem;
-
-	private List<HousingObserver> mockAcceptedObservers;
-	private Booking mockBooking;
-	private Tenant mockTenant;
-	private City mockCity;
-	private Housing mockHousing;
-	private HousingType mockHousingType;
-
-	@BeforeEach
-	public void setUp() {
-
-		mockAcceptedObservers = new ArrayList<>();
-		mockBooking = mock(Booking.class);
-		mockTenant = mock(Tenant.class);
-		mockCity = mock(City.class);
-		mockHousing = mock(Housing.class);
-		mockHousingType = mock(HousingType.class);
-
-		bookingSystem = new BookingSystem();
-	}
-
 	@Test
-	public void testNotifyBookingAccepted() {
-		bookingSystem.notifyBookingAccepted(mockHousing, mockBooking);
+    void testGetAllBookings() {
+        Housing housing1 = Mockito.mock(Housing.class);
+        Housing housing2 = Mockito.mock(Housing.class);
+        Booking booking1 = Mockito.mock(Booking.class);
+        Booking booking2 = Mockito.mock(Booking.class);
+        when(housing1.getBookings()).thenReturn(List.of(booking1));
+        when(housing2.getBookings()).thenReturn(List.of(booking2));
+        BookingSystem system = new BookingSystem(List.of(housing1, housing2));
+        assertEquals(List.of(booking1, booking2), system.getAllBookings());
+    }
 
-		List<Booking> allBookings = bookingSystem.getAllBookings();
-		assertEquals(1, allBookings.size());
-		assertTrue(allBookings.contains(mockBooking));
-	}
+    @Test
+    void testGetAllBookingsForTenant() {
+        Housing housing1 = Mockito.mock(Housing.class);
+        Housing housing2 = Mockito.mock(Housing.class);
+        Booking booking1 = Mockito.mock(Booking.class);
+        Booking booking2 = Mockito.mock(Booking.class);
+        Booking booking3 = Mockito.mock(Booking.class);
+        Tenant tenant = Mockito.mock(Tenant.class);
+        Tenant otherTenant = Mockito.mock(Tenant.class);
+        when(housing1.getBookings()).thenReturn(List.of(booking1, booking2));
+        when(housing2.getBookings()).thenReturn(List.of(booking3));
+        when(booking1.getTenant()).thenReturn(tenant);
+        when(booking2.getTenant()).thenReturn(otherTenant);
+        when(booking3.getTenant()).thenReturn(tenant);
+        BookingSystem system = new BookingSystem(List.of(housing1, housing2));
+        assertEquals(List.of(booking1, booking3), system.getAllBookings(tenant));
+    }
 
-	@Test
-	public void testCancelBooking() {
-		when(mockBooking.getHousing()).thenReturn(mockHousing);
-		when(mockHousing.getHousingType()).thenReturn(mockHousingType);
-		when(mockHousingType.getName()).thenReturn("Apartment");
-		bookingSystem.notifyBookingAccepted(mockHousing, mockBooking);
-		bookingSystem.notifyBookingCancelled(mockHousing, mockBooking);
+    @Test
+    void testGetFutureBookings() {
+        Housing housing1 = Mockito.mock(Housing.class);
+        Booking booking1 = Mockito.mock(Booking.class);
+        Booking booking2 = Mockito.mock(Booking.class);
+        Tenant tenant = Mockito.mock(Tenant.class);
+        when(housing1.getBookings()).thenReturn(List.of(booking1, booking2));
+        when(booking1.getTenant()).thenReturn(tenant);
+        when(booking2.getTenant()).thenReturn(tenant);
+        when(booking1.startsAfter(LocalDate.now())).thenReturn(true);
+        when(booking2.startsAfter(LocalDate.now())).thenReturn(false);
+        BookingSystem system = new BookingSystem(List.of(housing1));
+        assertEquals(List.of(booking1), system.getFutureBookings(tenant));
+    }
 
-		List<Booking> allBookings = bookingSystem.getAllBookings();
-		assertEquals(0, allBookings.size());
-	}
+    @Test
+    void testGetBookingsFromCity() {
+        Housing housing1 = Mockito.mock(Housing.class);
+        Booking booking1 = Mockito.mock(Booking.class);
+        Booking booking2 = Mockito.mock(Booking.class);
+        Tenant tenant = Mockito.mock(Tenant.class);
+        City city = Mockito.mock(City.class);
+        when(housing1.getBookings()).thenReturn(List.of(booking1, booking2));
+        when(booking1.getTenant()).thenReturn(tenant);
+        when(booking2.getTenant()).thenReturn(tenant);
+        when(booking1.isOnCity(city)).thenReturn(true);
+        when(booking2.isOnCity(city)).thenReturn(false);
+        BookingSystem system = new BookingSystem(List.of(housing1));
+        assertEquals(List.of(booking1), system.getBookingsFromCity(tenant, city));
+    }
 
-	@Test
-	public void testGetAllBookings() {
-		bookingSystem.notifyBookingAccepted(mockHousing, mockBooking);
-
-		List<Booking> allBookings = bookingSystem.getAllBookings();
-		assertEquals(1, allBookings.size());
-		assertTrue(allBookings.contains(mockBooking));
-	}
-
-	@Test
-	public void testGetAllBookingsForTenant() {
-		when(mockBooking.getTenant()).thenReturn(mockTenant);
-		bookingSystem.notifyBookingAccepted(mockHousing, mockBooking);
-
-		List<Booking> tenantBookings = bookingSystem.getAllBookings(mockTenant);
-		assertEquals(1, tenantBookings.size());
-		assertTrue(tenantBookings.contains(mockBooking));
-	}
-
-	@Test
-	public void testGetFutureBookings() {
-		when(mockBooking.getTenant()).thenReturn(mockTenant);
-		when(mockBooking.startsAfter(any(LocalDate.class))).thenReturn(true);
-
-		bookingSystem.notifyBookingAccepted(mockHousing, mockBooking);
-
-		List<Booking> futureBookings = bookingSystem.getFutureBookings(mockTenant);
-		assertEquals(1, futureBookings.size());
-		assertTrue(futureBookings.contains(mockBooking));
-	}
-
-	@Test
-	public void testGetBookingsFromCity() {
-		when(mockBooking.getTenant()).thenReturn(mockTenant);
-		when(mockBooking.isOnCity(mockCity)).thenReturn(true);
-
-		bookingSystem.notifyBookingAccepted(mockHousing, mockBooking);
-
-		List<Booking> cityBookings = bookingSystem.getBookingsFromCity(mockTenant, mockCity);
-		assertEquals(1, cityBookings.size());
-		assertTrue(cityBookings.contains(mockBooking));
-	}
-
-	@Test
-	public void testGetBookingCities() {
-		when(mockBooking.getTenant()).thenReturn(mockTenant);
-		when(mockBooking.getCity()).thenReturn(mockCity);
-
-		bookingSystem.notifyBookingAccepted(mockHousing, mockBooking);
-
-		List<City> bookingCities = bookingSystem.getBookingCities(mockTenant);
-		assertEquals(1, bookingCities.size());
-		assertTrue(bookingCities.contains(mockCity));
-	}
-
-
-	@Test
-	public void testCancelBookingProcessesNextConditionalBooking() {
-		Booking existingBooking = mock(Booking.class);
-		Booking conditionalBooking = mock(Booking.class);
-		Housing housing = mock(Housing.class);
-		DateRange existingRange = mock(DateRange.class);
-		DateRange conditionalRange = mock(DateRange.class);
-
-		when(existingBooking.getHousing()).thenReturn(housing);
-		when(existingBooking.getRange()).thenReturn(existingRange);
-
-		when(conditionalBooking.getHousing()).thenReturn(housing);
-		when(conditionalBooking.getRange()).thenReturn(conditionalRange);
-
-		when(existingRange.overlaps(conditionalRange)).thenReturn(true);
-
-		when(mockHousing.getHousingType()).thenReturn(mockHousingType);
-		when(mockHousingType.getName()).thenReturn("Apartment");
-		when(existingBooking.getHousing()).thenReturn(mockHousing);
-		when(existingBooking.getRange()).thenReturn(existingRange);
-		when(conditionalBooking.getHousing()).thenReturn(mockHousing);
-		when(conditionalBooking.getRange()).thenReturn(conditionalRange);
-
-		bookingSystem.notifyBookingAccepted(mockHousing, existingBooking);
-		bookingSystem.notifyBookingAccepted(mockHousing, conditionalBooking);
-
-		bookingSystem.notifyBookingCancelled(mockHousing, existingBooking);
-
-		List<Booking> allBookings = bookingSystem.getAllBookings();
-		assertEquals(1, allBookings.size());
-		assertTrue(allBookings.contains(conditionalBooking));
-	}
+    @Test
+    void testGetBookingCities() {
+        Housing housing1 = Mockito.mock(Housing.class);
+        Booking booking1 = Mockito.mock(Booking.class);
+        Booking booking2 = Mockito.mock(Booking.class);
+        Tenant tenant = Mockito.mock(Tenant.class);
+        City city = Mockito.mock(City.class);
+        when(housing1.getBookings()).thenReturn(List.of(booking1, booking2));
+        when(booking1.getTenant()).thenReturn(tenant);
+        when(booking2.getTenant()).thenReturn(tenant);
+        when(booking1.getCity()).thenReturn(city);
+        when(booking2.getCity()).thenReturn(city);
+        BookingSystem system = new BookingSystem(List.of(housing1));
+        assertEquals(List.of(city, city), system.getBookingCities(tenant));
+    }
 
 }

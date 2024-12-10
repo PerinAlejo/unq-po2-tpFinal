@@ -121,4 +121,21 @@ public class BookingTest {
 
 		verify(mockOwner).cancelBook(booking);
 	}
+	
+	@Test
+	public void testIsBookedOnRange() {
+		DateRange anotherDateRange = mock(DateRange.class);
+		LocalDate start = LocalDate.now();
+		LocalDate end = start.plusDays(1);
+		when(anotherDateRange.getStart()).thenReturn(start);
+		when(anotherDateRange.getEnd()).thenReturn(end);
+		when(mockDateRange.contains(start)).thenReturn(false);
+		when(mockDateRange.contains(end)).thenReturn(true);
+
+		assertTrue(booking.isBookedOnRange(anotherDateRange));
+		verify(anotherDateRange).getStart();
+		verify(anotherDateRange).getEnd();
+		verify(mockDateRange).contains(start);
+		verify(mockDateRange).contains(end);
+	}
 }

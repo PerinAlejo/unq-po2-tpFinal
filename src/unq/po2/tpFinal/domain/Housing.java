@@ -123,4 +123,8 @@ public class Housing implements Rankeable {
 	public void removeObserver(HousingObserver observer) {
 		this.observers.remove(observer);
 	}
+	
+	public List<Booking> getBookings(){
+		return this.bookingStatus.getBookings();
+	}
 }

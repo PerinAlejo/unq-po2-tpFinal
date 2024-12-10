@@ -39,4 +39,8 @@ public class BookingStatus {
 		}
 		housing.bookingIsCancelled(booking);
 	}
+
+	public List<Booking> getBookings() { 
+		return this.bookings;
+	}
 }

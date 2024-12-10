@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import unq.po2.tpFinal.*;
+
 import unq.po2.tpFinal.domain.Address;
 import unq.po2.tpFinal.domain.Booking;
 import unq.po2.tpFinal.domain.CancellationPolicy;
@@ -23,7 +23,7 @@ import unq.po2.tpFinal.interfaces.PaymentMethod;
 import unq.po2.tpFinal.interfaces.PriceCalculatorInterface;
 import unq.po2.tpFinal.interfaces.Service;
 
-import java.time.LocalDate;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
