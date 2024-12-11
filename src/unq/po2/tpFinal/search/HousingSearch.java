@@ -14,17 +14,9 @@ public class HousingSearch {
 	}
 	
 	public List<Housing> filter(List<Housing> housingList) {
-		List<Housing> filteredHousing = new ArrayList<>();
-
-        for (Housing housing : housingList) {
-            // Verifica si la instancia cumple con todos los filtros
-            boolean matchesAll = filterList.stream().allMatch(filter -> filter.test(housing));
-            if (matchesAll) {
-                filteredHousing.add(housing);
-            }
-        }
-
-        return filteredHousing;
+	    return housingList.stream()
+	            .filter(housing -> filterList.stream().allMatch(filter -> filter.matches(housing)))
+	            .toList();
 	}
 	
 }

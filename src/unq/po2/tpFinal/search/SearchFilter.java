@@ -6,6 +6,6 @@ import unq.po2.tpFinal.domain.Housing;
 
 public interface SearchFilter {
 	
-	boolean test(Housing housing); 
+	boolean matches(Housing housing); 
 	
 }

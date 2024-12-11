@@ -16,7 +16,7 @@ public class MaxPriceFilter implements SearchFilter {
 	}
 	
 	@Override
-	public boolean test(Housing housing) {
+	public boolean matches(Housing housing) {
 		return housing.getPrice(this.dateRange) <= this.maxPrice;
 	}
 }
