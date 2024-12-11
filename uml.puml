@@ -18,25 +18,17 @@ Admin -->"1" Services :services
 Admin -->"1" BookingSystem :bookingSystem
 Admin -->"*" Housing :housings
 
-class BookingSystem implements BookingAcceptedObserver{
+class BookingSystem implements HousingObserver{
 
-    +notifyBookingAccepted(booking:Booking) : void
-    +processBooking( booking:Booking) : void
-    -isHousingAvailable( booking:Booking) : boolean
-    +cancelBooking( booking:Booking) : void
-    -notifyObserversBookingAccepted( booking:Booking) : void
-    +getAllBookings( tenant:Tenant) : List<Booking>
-    +getAllBookings() : List<Booking>
-    +getFutureBookings( tenant:Tenant) : List<Booking>
-    +getBookingsFromCity( tenant:Tenant,  city:City) : List<Booking>
-    +getBookingCities( tenant:Tenant) :  List<City>
+    + getAllBookings(tenant: Tenant): List<Booking>
+    + getAllBookings(): List<Booking>
+    + getFutureBookings(tenant: Tenant): List<Booking>
+    + getBookingsFromCity(tenant: Tenant, city: City): List<Booking>
+    + getBookingCities(tenant: Tenant): List<City>
 }
 
 BookingSystem  -->"*"  Booking : confirmedBookings
-BookingSystem  -->"*"  Booking : conditionalBookings
-BookingSystem  -->"*"  BookingCancelledObserver : bookingCancelledObservers
-BookingSystem  -->"*"  Housing : conditionalBookings
-BookingSystem  -->"*"  BookingAcceptedObserver : bookingAcceptedObservers
+
 
 class Address {
     - houseLocation: String
@@ -48,29 +40,35 @@ class Address {
 Address -->"1" Country:country
 Address -->"1" City:city
 
-class Booking implements BookingAcceptanceObservable{
+class Booking {
 
-    + Booking(housing: Housing, tenant: Tenant, range: DateRange, paymentMethod: PaymentMethod)
     + getTenant(): Tenant
     + getHousing(): Housing
     + getOwner(): Owner
     + getRange(): DateRange
-    + addObserver(observer: BookingAcceptedObserver): void
-    + removeObserver(observer: BookingAcceptedObserver): void
     + checkOut(rankings: List<Ranking>): void
     + startsAfter(date: LocalDate): boolean
     + isOnCity(city: City): boolean
     + getCity(): City
     + isBookedOn(date: LocalDate): boolean
+    + isBookedOnRange(range: DateRange): boolean
     + cancelBook(): void
-    + acceptBook(): void
 }
 
-Booking -->"1" Housing : housing
-Booking -->"1" Tenant : tenant
-Booking -->"1" DateRange : range
-Booking -->"1" PaymentMethod : paymentMethod
-Booking -->"*" BookingAcceptedObserver : bookingObservers
+Booking --> "1" Housing : housing
+Booking --> "1" Tenant : tenant
+Booking --> "1" DateRange : range
+Booking --> "1" PaymentMethod : paymentMethod
+
+class BookingStatus {
+
+    + isAvailable(range: DateRange): boolean
+    + book(booking: Booking, housing: Housing): void
+    + cancelBooking(booking: Booking, housing: Housing): void
+}
+
+BookingStatus --> "*" Booking : bookings
+BookingStatus --> "*" Booking : waitlist
 
 abstract class CancellationPolicy {
 
@@ -113,27 +111,26 @@ class Country {
 }
 
 class DateRange {
-    - start: LocalDate
-    - end: LocalDate
 
-    + DateRange(start: LocalDate, end: LocalDate)
+    - start : LocalDate
+    - duration: int
+
     + getStart(): LocalDate
     + getEnd(): LocalDate
     + getOverlapDays(other: DateRange): long
     + overlaps(other: DateRange): boolean
     + startsAfter(date: LocalDate): boolean
     + contains(date: LocalDate): boolean
+    + equals(o: Object): boolean
+    + getDays(): int
+    - isSameDate(other: DateRange): boolean
 }
 
-
 class Housing implements Rankeable {
+    
     - area: float
     - capacity: int
-
-    + Housing(housingType: HousingType, area: float, address: Address, services: List<Service>, 
-              capacity: int, pictures: List<Picture>, stayDetails: HousingStayDetails, 
-              paymentMethods: List<PaymentMethod>, priceCalculator: PriceCalculatorInterface, 
-              owner: Owner, cancellationPolicy: CancellationPolicy)
+   
     + getPrice(range: DateRange): double
     + getCapacity(): int
     + getAddress(): Address
@@ -145,19 +142,30 @@ class Housing implements Rankeable {
     + getCity(): City
     + getCancelationFee(range: DateRange): double
     + getDefaultPaymentMethod(): PaymentMethod
+    + getHousingType(): HousingType
+    + book(booking: Booking): void
+    + cancelBook(booking: Booking): void
+    + priceDropped(newPrice: PriceForRange): void
+    + markAsBooked(booking: Booking): void
+    + bookingIsCancelled(booking: Booking): void
+    + addObserver(observer: HousingObserver): void
+    + removeObserver(observer: HousingObserver): void
 }
 
-Housing -->"1" HousingType : housingType
-Housing -->"1" Address : address
-Housing -->"*" Service : services
-Housing -->"*" Picture : pictures
-Housing -->"1" HousingStayDetails : stayDetails
-Housing -->"*" PaymentMethod : paymentMethods
-Housing -->"1" PaymentMethod : defaultPaymentMethod
-Housing -->"1" PriceCalculatorInterface : priceCalculator
-Housing -->"*" Ranking : rankings
-Housing -->"1" Owner : owner
-Housing -->"1" CancellationPolicy : cancellationPolicy
+Housing --> "1" HousingType :housingType
+Housing --> "1" Address :address
+Housing --> "1" Owner : owner
+Housing --> "1" CancellationPolicy : cancellationPolicy
+Housing --> "1" BookingStatus : bookingStatus
+Housing --> "*" HousingObserver : observers
+Housing --> "1" PriceCalculatorInterface : priceCalculator
+Housing --> "*" PaymentMethod : paymentMethods
+Housing --> "1" PaymentMethod : defaultPaymentMethod
+Housing --> "*" Service : services
+Housing --> "*" Picture : pictures
+Housing --> "*" Ranking : rankings
+Housing --> "*" HousingStayDetails : stayDetails
+
 
 class HousingStayDetails {
     - checkIn: LocalDateTime
@@ -188,7 +196,7 @@ class Owner extends User implements Rankeable, Ranker{
 }
 
 Owner -->"*" Ranking:rankings
-Owner -->"*" Booking:rentals
+Owner -->"*" Booking:bookings
 Owner -->"1" BookingAcceptanceStrategy:bookingAcceptanceStrategy
 
 class Picture {
@@ -205,6 +213,8 @@ class PriceForRange {
 
     + PriceForRange(price: double, range: DateRange)
     + getPriceForRange(range: DateRange): double
+    + getPrice() : double
+    +getRange() : DateRange
 }
 
 PriceForRange -->"1" DateRange: range
@@ -231,7 +241,7 @@ class Tenant extends User implements Rankeable, Ranker{
     + addRanking(ranking: Ranking): void
     + getRankings(): List<Ranking>
     + rank(ranking: Ranking): void
-    + book(housing: Housing, range: DateRange, paymentMethod: PaymentMethod, observers: List<BookingAcceptedObserver>): void
+    + book(housing: Housing, range: DateRange, paymentMethod: PaymentMethod): void
 }
 
 Tenant -->"*" Ranking:rankings
@@ -249,41 +259,20 @@ class User {
     + getCreatedOn(): LocalDateTime
 }
 
-class BookingConditionalStrategy implements BookingStrategy{
+class BookingEmailSender implements HousingObserver {
 
-    + BookingConditionalStrategy(conditionalBookings: Map<Housing, Queue<Booking>>)
-    + process(booking: Booking): void
+    + notifyBookingAccepted(housing: Housing ,  booking:Booking): void
+    + notifyBookingCancelled(housing:Housing , booking:Booking ): void
+    + notifyPriceDrop(housing:Housing , newPrice:double ): void
+
 }
 
-BookingConditionalStrategy -->"*" Booking :conditionalBookings
-BookingConditionalStrategy -->"*" Housing :conditionalBookings
-
-class BookingConfirmedStrategy implements BookingStrategy{
-
-    + BookingConfirmedStrategy(confirmedBookings: Set<Booking>)
-    + process(booking: Booking): void
-}
-
-confirmedBookings -->"*" Booking: confirmedBookings
-
-class CancellationEmailSender implements BookingCancelledObserver{
-
-    + CancellationEmailSender(emailSender: EmailSender)
-    + notifyBookingCancelled(booking: Booking): void
-}
-
-CancellationEmailSender -->"1" EmailSender:emailSender
+BookingEmailSender --> "1" EmailSender : emailSender
 
 class Cash  implements PaymentMethod{
     + applyCharge(amount: double): void
     + receivePayment(amount: double): void
 }
-
-class ConfirmationEmailSender  implements BookingAcceptedObserver{
-    + notifyBookingAccepted(booking: Booking): void
-}
-
-ConfirmationEmailSender -->"1" EmailSender:emailSender
 
 class CreditCard implements PaymentMethod{
     + applyCharge(amount: double): void
@@ -295,22 +284,20 @@ class DebitCard implements PaymentMethod {
     + receivePayment(amount: double): void
 }
 
-class EventPublisherImpl implements EventPublisher{
-
-    + subscribeToPriceDrop(subscriber: PriceDropSubscriber): void
-    + unsubscribeFromPriceDrop(subscriber: PriceDropSubscriber): void
-    + subscribeToReservationCancelled(subscriber: ReservationCancelledSubscriber): void
-    + unsubscribeFromReservationCancelled(subscriber: ReservationCancelledSubscriber): void
-    + subscribeToReservationAccepted(subscriber: ReservationAcceptedSubscriber): void
-    + unsubscribeFromReservationAccepted(subscriber: ReservationAcceptedSubscriber): void
-    + notifyPriceDrop(propertyType: String, newPrice: double): void
-    + notifyReservationCancelled(propertyType: String): void
-    + notifyReservationAccepted(booking: Booking): void
+class MobileAppHousingAvailabilityNotifier implements HousingObserver {
+    + notifyBookingAccepted(housing: Housing ,  booking:Booking): void
+    + notifyBookingCancelled(housing:Housing , booking:Booking ): void
+    + notifyPriceDrop(housing:Housing , newPrice:double ): void
 }
 
-EventPublisherImpl -->"*" PriceDropSubscriber:priceDropSubscribers
-EventPublisherImpl -->"*" ReservationCancelledSubscriber:reservationCancelledSubscribers
-EventPublisherImpl -->"*" ReservationAcceptedSubscriber:reservationAcceptedSubscribers
+MobileAppHousingAvailabilityNotifier --> "1" PopUpWindow : popUpWindow
+
+interface PopUpWindow {
+    + popUp(message:String , color:String , fontSize:int ) : void
+
+}
+
+
 
 class FreeCancellation extends CancellationPolicy{
     - MAX_DAYS_FOR_FREE_CANCELLATION: int
@@ -330,31 +317,41 @@ class NoCancellation extends CancellationPolicy{
 class PriceCalculatorImpl implements PriceCalculatorInterface{
 
     + getPrice(range: DateRange): double
+    + addPrice(newPrice:PriceForRange , housing:Housing ): void
 }
 
 PriceCalculatorImpl -->"*" PriceForRange:priceForRanges
 
+class PriceDropNotifier implements HousingObserver {
+
+    + notifyBookingAccepted(housing: Housing ,  booking:Booking): void
+    + notifyBookingCancelled(housing:Housing , booking:Booking ): void
+    + notifyPriceDrop(housing:Housing , newPrice:double ): void
+}
+
+PriceDropNotifier --> "1" HomePagePublisher : publisher
+
 class CapacityFilter implements SearchFilter{
     - capacity: int
 
-    + filter(housingList: List<Housing>): List<Housing>
+    + test(housing: Housing): boolean
 }
 
 class CityFilter implements SearchFilter{
 
-    + filter(housingList: List<Housing>): List<Housing>
+    + test(housing: Housing): boolean
 }
 
 CityFilter -->"1" City : city
 
 class DateRangeFilter implements SearchFilter{
 
-    + filter(housingList: List<Housing>): List<Housing>
+    + test(housing: Housing): boolean
 }
 
 DateRangeFilter -->"1" DateRange:dateRange
 
-class HousingSearch implements SearchFilter{
+class HousingSearch {
 
     + filter(housingList: List<Housing>): List<Housing>
 }
@@ -365,7 +362,7 @@ HousingSearch -->"*" SearchFilter:filterList
 class MinPriceFilter implements SearchFilter{
     - minPrice: double
     
-    + filter(housingList: List<Housing>): List<Housing>
+    + test(housing: Housing): boolean
 }
 
 MinPriceFilter -->"1" DateRange:dateRange
@@ -373,7 +370,7 @@ MinPriceFilter -->"1" DateRange:dateRange
 class MaxPriceFilter implements SearchFilter{
     - maxPrice: double
     
-    + filter(housingList: List<Housing>): List<Housing>
+    + test(housing: Housing): boolean
 }
 
 MaxPriceFilter -->"1" DateRange:dateRange
@@ -384,7 +381,7 @@ class HousingSearchBuilder {
     + setCapacity(capacity: int): HousingSearchBuilder
     + setMinPrice(minPrice: double): HousingSearchBuilder
     + setMaxPrice(maxPrice: double): HousingSearchBuilder
-    + build(): SearchFilter
+    + build(): HousingSearch
 }
 
 HousingSearchBuilder -->"*" HousingSearchBuilder:filterList
@@ -453,7 +450,7 @@ OwnerView -->"1" Housing: currentHousing
 
 
 interface SearchFilter {
-	+filter(housingList: List<Housing> ): List<Housing> 
+	+test(housing:housing) : boolean 
 }
 
 interface Categories{
@@ -469,31 +466,19 @@ interface Services{
 	+  getAll():List<Service>
 }
 
-interface BookingAcceptedObserver{
-	+ notifyBookingAccepted( booking:Booking) : void
-}
-
-interface BookingAcceptanceStrategy{
-	+  isAcceptable(booking:Booking):boolean
-}
-
-interface BookingCancelledObserver{
-	+  notifyBookingCancelled(booking:Booking):void
-}
-
-interface BookingStrategy {
-	+ process(booking:Booking):void
-}
 
 interface EmailSender {
 	+  sendEmail(to:String, body:String):void
 }
 
-interface EventPublisher {
-	+ subscribeToPriceDrop(subscriber:PriceDropSubscriber):void
-    + unsubscribeFromPriceDrop(subscriber:PriceDropSubscriber):void
-    + subscribeToReservationCancelled(subscriber:ReservationCancelledSubscriber):void
-    + unsubscribeFromReservationCancelled(subscriber:ReservationCancelledSubscriber):void
+interface HousingObserver {
+    + notifyBookingAccepted(housing: Housing ,  booking:Booking): void
+    + notifyBookingCancelled(housing:Housing , booking:Booking ): void
+    + notifyPriceDrop(housing:Housing , newPrice:double ): void
+}
+
+interface HomePagePublisher {
+	+ publish(message:String ): void
 }
 
 interface PaymentMethod{
@@ -503,11 +488,9 @@ interface PaymentMethod{
 
 interface PriceCalculatorInterface {
 	+ getPrice(range:DateRange):double
+    + addPrice(newPrice:PriceForRange , housing:Housing ): void
 }
 
-interface PriceDropSubscriber {
-	+ onPriceDrop(message:String):void
-}
 
 interface Rankeable {
 	+ addRanking(ranking:Ranking):void
@@ -518,13 +501,6 @@ interface Ranker {
 	+ rank(ranking:Ranking):void
 }
 
-interface ReservationAcceptedSubscriber {
-	+ onReservationAccepted(booking:Booking):void
-}
-
-interface ReservationCancelledSubscriber {
-    + onReservationCancelled(message:String):void
-}
 
 interface Service {
 	+ getName():String
