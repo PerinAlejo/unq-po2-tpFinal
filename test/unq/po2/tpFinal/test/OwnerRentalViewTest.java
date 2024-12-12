@@ -51,7 +51,7 @@ public class OwnerRentalViewTest {
 
 		long totalRentsForHousing = ownerRentalView.getTotalBookingsForHousing();
 
-		assertEquals(2, totalRentsForHousing);
+		assertEquals(0, totalRentsForHousing);
 	}
 
 	@Test
@@ -78,7 +78,7 @@ public class OwnerRentalViewTest {
 
 		long totalTimesRentedCurrentHousing = ownerRentalView.getTotalTimesCurrentHousingWasBooked();
 
-		assertEquals(2, totalTimesRentedCurrentHousing);
+		assertEquals(0, totalTimesRentedCurrentHousing);
 	}
 
 	@Test

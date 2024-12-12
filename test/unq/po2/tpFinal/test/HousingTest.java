@@ -18,12 +18,13 @@ import unq.po2.tpFinal.domain.Owner;
 import unq.po2.tpFinal.domain.Picture;
 import unq.po2.tpFinal.domain.PriceForRange;
 import unq.po2.tpFinal.domain.Ranking;
+import unq.po2.tpFinal.domain.Tenant;
 import unq.po2.tpFinal.interfaces.HousingObserver;
 import unq.po2.tpFinal.interfaces.PaymentMethod;
 import unq.po2.tpFinal.interfaces.PriceCalculatorInterface;
 import unq.po2.tpFinal.interfaces.Service;
 
-
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -44,7 +45,6 @@ public class HousingTest {
 
 	@BeforeEach
 	public void setUp() {
-		// Inicializar mocks
 		mockHousingType = mock(HousingType.class);
 		mockAddress = mock(Address.class);
 		mockServices = new ArrayList<>();
@@ -197,5 +197,25 @@ public class HousingTest {
 	@Test
 	public void returnType() {
 		assertNotNull(housing.getHousingType());
+	}
+	
+	@Test
+	public void returnsBookings() {
+		assertNotNull(housing.getBookings());
+	}
+	
+	@Test 
+	public void confirmsBooking() {
+		Booking mockBooking = mock(Booking.class);
+		Tenant mockTenant = mock(Tenant.class);
+		when(mockTenant.getEmail()).thenReturn("mail@email.com");
+		when(mockBooking.getHousing()).thenReturn(housing);
+		when(mockBooking.getTenant()).thenReturn(mockTenant);
+		HousingObserver mockObserver = mock(HousingObserver.class);
+		housing.addObserver(mockObserver);
+		when(mockBooking.getRange()).thenReturn(new DateRange(LocalDate.now(), 0));
+		housing.addPendingBooking(mockBooking);
+		housing.confirmBooking(mockBooking);
+		verify(mockObserver).notifyBookingAccepted(housing, mockBooking);
 	}
 }

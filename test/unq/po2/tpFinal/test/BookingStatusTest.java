@@ -79,7 +79,9 @@ class BookingStatusTest {
     @Test
     void testCancelBookingMovesWaitlistedToBookings() {
         when(bookingMock1.getRange()).thenReturn(dateRangeMock);
+        when(bookingMock1.getHousing()).thenReturn(housingMock);
         when(bookingMock2.getRange()).thenReturn(dateRangeMock);
+        when(bookingMock2.getHousing()).thenReturn(housingMock);
         when(bookingMock1.isBookedOnRange(dateRangeMock)).thenReturn(true);
         when(bookingMock2.isBookedOnRange(dateRangeMock)).thenReturn(true);
 

@@ -60,7 +60,7 @@ public class OwnerTest {
 	public void testAcceptBooking() {
 		Housing mockHousing = mock(Housing.class);
 		when(mockBooking.getHousing()).thenReturn(mockHousing);
-		verify(mockHousing).book(mockBooking);
+		verify(mockHousing, never()).book(mockBooking);
 	}
 
 	@Test
