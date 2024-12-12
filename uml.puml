@@ -1,4 +1,8 @@
 @startuml tp
+
+skinparam linetype polyline
+skinparam linetype ortho
+
 class Admin {
 
     + addCategory(category: Category): void
