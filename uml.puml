@@ -337,24 +337,24 @@ PriceCalculatorImpl -->"*" PriceForRange:priceForRanges
 class CapacityFilter implements SearchFilter{
     - capacity: int
 
-    + filter(housingList: List<Housing>): List<Housing>
+    + test(housing: Housing): boolean
 }
 
 class CityFilter implements SearchFilter{
 
-    + filter(housingList: List<Housing>): List<Housing>
+    + test(housing: Housing): boolean
 }
 
 CityFilter -->"1" City : city
 
 class DateRangeFilter implements SearchFilter{
 
-    + filter(housingList: List<Housing>): List<Housing>
+    + test(housing: Housing): boolean
 }
 
 DateRangeFilter -->"1" DateRange:dateRange
 
-class HousingSearch implements SearchFilter{
+class HousingSearch {
 
     + filter(housingList: List<Housing>): List<Housing>
 }
@@ -365,7 +365,7 @@ HousingSearch -->"*" SearchFilter:filterList
 class MinPriceFilter implements SearchFilter{
     - minPrice: double
     
-    + filter(housingList: List<Housing>): List<Housing>
+    + test(housing: Housing): boolean
 }
 
 MinPriceFilter -->"1" DateRange:dateRange
@@ -373,7 +373,7 @@ MinPriceFilter -->"1" DateRange:dateRange
 class MaxPriceFilter implements SearchFilter{
     - maxPrice: double
     
-    + filter(housingList: List<Housing>): List<Housing>
+    + test(housing: Housing): boolean
 }
 
 MaxPriceFilter -->"1" DateRange:dateRange
@@ -384,7 +384,7 @@ class HousingSearchBuilder {
     + setCapacity(capacity: int): HousingSearchBuilder
     + setMinPrice(minPrice: double): HousingSearchBuilder
     + setMaxPrice(maxPrice: double): HousingSearchBuilder
-    + build(): SearchFilter
+    + build(): HousingSearch
 }
 
 HousingSearchBuilder -->"*" HousingSearchBuilder:filterList
@@ -453,7 +453,7 @@ OwnerView -->"1" Housing: currentHousing
 
 
 interface SearchFilter {
-	+filter(housingList: List<Housing> ): List<Housing> 
+	+test(housing:housing) : boolean 
 }
 
 interface Categories{
