@@ -69,6 +69,7 @@ class BookingStatus {
     + isAvailable(range: DateRange): boolean
     + book(booking: Booking, housing: Housing): void
     + cancelBooking(booking: Booking, housing: Housing): void
+    + getBookings() :List<Booking>  
 }
 
 BookingStatus --> "*" Booking : bookings
