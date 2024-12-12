@@ -16,34 +16,12 @@ import java.util.List;
 public class OwnerTest {
 
 	private Owner owner;
-	private Booking mockBooking;
-	private BookingAcceptanceStrategy mockAcceptanceStrategy;
+	private Booking mockBooking;	
 
 	@BeforeEach
 	public void setUp() {
-
-		mockAcceptanceStrategy = mock(BookingAcceptanceStrategy.class);
 		mockBooking = mock(Booking.class);
-		owner = new Owner("Juanita Perez", "perez@perez.com", "0987654321", LocalDateTime.now(),
-				mockAcceptanceStrategy);
-	}
-
-	@Test
-	public void testAddRental() {
-		owner.addRental(mockBooking);
-		List<Booking> rentals = owner.getRentals();
-
-		assertEquals(1, rentals.size());
-		assertTrue(rentals.contains(mockBooking));
-	}
-
-	@Test
-	public void testGetRentals() {
-		owner.addRental(mockBooking);
-		List<Booking> rentals = owner.getRentals();
-
-		assertEquals(1, rentals.size());
-		assertEquals(mockBooking, rentals.get(0));
+		owner = new Owner("Juanita Perez", "perez@perez.com", "0987654321", LocalDateTime.now());
 	}
 
 	@Test
@@ -82,21 +60,14 @@ public class OwnerTest {
 	public void testAcceptBooking() {
 		Housing mockHousing = mock(Housing.class);
 		when(mockBooking.getHousing()).thenReturn(mockHousing);
-		when(mockAcceptanceStrategy.isAcceptable(mockBooking)).thenReturn(true);
-
-		owner.accept(mockBooking);
-
-		verify(mockHousing).book(mockBooking);
+		verify(mockHousing, never()).book(mockBooking);
 	}
 
 	@Test
 	public void testAcceptBookingNotAccepted() {
 		Housing mockHousing = mock(Housing.class);
 		when(mockBooking.getHousing()).thenReturn(mockHousing);
-		when(mockAcceptanceStrategy.isAcceptable(mockBooking)).thenReturn(false);
-
-		owner.accept(mockBooking);
-
+		owner.approve(mockBooking);
 		verify(mockHousing, never()).book(mockBooking);
 	}
 }

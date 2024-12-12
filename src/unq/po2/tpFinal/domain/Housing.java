@@ -90,6 +90,10 @@ public class Housing implements Rankeable {
 	public PaymentMethod getDefaultPaymentMethod() {
 		return this.defaultPaymentMethod;
 	}
+	
+	public void addPendingBooking(Booking booking) {		
+		this.bookingStatus.addPendingBooking(booking);
+	}
 
 	public HousingType getHousingType() {
 		return this.housingType;
@@ -98,9 +102,8 @@ public class Housing implements Rankeable {
 	public void book(Booking booking) {
 		this.bookingStatus.book(booking, this);
 	}
-	
 
-	public void cancelBook(Booking booking) {
+	public void cancelBook(Booking booking) {		
 		this.bookingStatus.cancelBooking(booking, this);
 	}
 
@@ -126,5 +129,9 @@ public class Housing implements Rankeable {
 	
 	public List<Booking> getBookings(){
 		return this.bookingStatus.getBookings();
+	}
+
+	public void confirmBooking(Booking booking) {
+		this.bookingStatus.book(booking, this);
 	}
 }

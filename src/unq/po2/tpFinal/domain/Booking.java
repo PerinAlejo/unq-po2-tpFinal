@@ -4,8 +4,8 @@ import java.time.LocalDate;
 import java.util.List;
 
 import unq.po2.tpFinal.interfaces.PaymentMethod;
-
 public class Booking {
+
 	private Housing housing;
 	private Tenant tenant;
 	private DateRange range;
@@ -61,6 +61,10 @@ public class Booking {
 	public void cancelBook() {
 		this.paymentMethod.applyCharge(this.housing.getCancelationFee(this.range));
 		this.housing.getDefaultPaymentMethod().applyCharge(this.housing.getCancelationFee(this.range));
-		this.getOwner().cancelBook(this);
+		this.housing.cancelBook(this);
+	}
+
+	public void confirm() {
+		this.housing.confirmBooking(this);		
 	}	
 }

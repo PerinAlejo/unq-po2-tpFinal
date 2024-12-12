@@ -117,9 +117,7 @@ public class BookingTest {
 		booking.cancelBook();
 
 		verify(mockPaymentMethod).applyCharge(cancellationFee);
-		verify(defaultPaymentMethod).applyCharge(cancellationFee);
-
-		verify(mockOwner).cancelBook(booking);
+		verify(defaultPaymentMethod).applyCharge(cancellationFee);		
 	}
 	
 	@Test
