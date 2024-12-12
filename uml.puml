@@ -22,7 +22,7 @@ Admin -->"1" Services :services
 Admin -->"1" BookingSystem :bookingSystem
 Admin -->"*" Housing :housings
 
-class BookingSystem implements HousingObserver{
+class BookingSystem{
 
     + getAllBookings(tenant: Tenant): List<Booking>
     + getAllBookings(): List<Booking>
@@ -31,7 +31,7 @@ class BookingSystem implements HousingObserver{
     + getBookingCities(tenant: Tenant): List<City>
 }
 
-BookingSystem  -->"*"  Booking : confirmedBookings
+BookingSystem  -->"*"  Housing : housings
 
 
 class Address {
