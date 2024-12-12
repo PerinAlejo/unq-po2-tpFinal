@@ -16,12 +16,13 @@ public class BookingEmailSender implements HousingObserver {
 	@Override
 	public void notifyBookingAccepted(Housing housing, Booking booking) {
 		this.emailSender.sendEmail(booking.getTenant().getEmail(), "Reserva aceptada");
-		
+		housing.removeObserver(this);
 	}
 
 	@Override
 	public void notifyBookingCancelled(Housing housing, Booking booking) {
 		this.emailSender.sendEmail(booking.getTenant().getEmail(), "Se cancelo la reserva");
+		housing.removeObserver(this);
 	}
 
 	@Override

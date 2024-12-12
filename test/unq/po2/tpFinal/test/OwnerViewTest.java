@@ -18,7 +18,7 @@ import unq.po2.tpFinal.domain.CategoryScore;
 import unq.po2.tpFinal.domain.Housing;
 import unq.po2.tpFinal.domain.Owner;
 import unq.po2.tpFinal.domain.Ranking;
-import unq.po2.tpFinal.views.OwnerRentalView;
+import unq.po2.tpFinal.views.OwnerBookingView;
 import unq.po2.tpFinal.views.OwnerView;
 
 public class OwnerViewTest {
@@ -86,7 +86,7 @@ public class OwnerViewTest {
 
 	@Test
 	public void testGetOwnerRentalView() {
-		OwnerRentalView ownerRentalView = ownerView.getOwnerRentalView();
+		OwnerBookingView ownerRentalView = ownerView.getOwnerRentalView();
 
 		assertNotNull(ownerRentalView);
 	}

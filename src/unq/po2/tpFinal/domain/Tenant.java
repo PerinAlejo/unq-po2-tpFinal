@@ -31,9 +31,17 @@ public class Tenant extends User implements Rankeable, Ranker {
 		ranking.getRanked().addRanking(ranking);
 	}
 	
-	public void book(Housing housing, DateRange range, PaymentMethod paymentMethod) {
-		Booking booking = new Booking(housing, this, range, paymentMethod);		
-		housing.getOwner().accept(booking);
+	public void book(Housing housing, DateRange range, PaymentMethod paymentMethod) throws Exception {
+		if(housing.isAvailable(range)) {
+			Booking booking = new Booking(housing, this, range, paymentMethod);		
+			housing.addPendingBooking(booking);
+		} else {
+			throw new Exception("La casa está ocupada en el período seleccionada");
+		}		
 	}
 	
+	public void conditionalBook(Housing housing, DateRange range, PaymentMethod paymentMethod) {
+		Booking booking = new Booking(housing, this, range, paymentMethod);		
+		housing.addPendingBooking(booking);
+	}
 }

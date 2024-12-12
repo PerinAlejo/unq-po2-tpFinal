@@ -74,16 +74,4 @@ public class TenantTest {
         assertEquals(1, rankings.size());
         assertEquals(mockRanking, rankings.get(0));
     }
-
-    @Test
-    public void testBook() {
-
-        Booking mockBooking = new Booking(mockHousing, tenant, mockDateRange, paymentMethod);
-
-        doNothing().when(mockOwner).accept(mockBooking);
-
-        tenant.book(mockHousing, mockDateRange, paymentMethod);
-
-        verify(mockOwner).accept(any(Booking.class));
-    }
 }

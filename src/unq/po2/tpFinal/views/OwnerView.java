@@ -28,7 +28,7 @@ public class OwnerView {
 		return this.owner.getCreatedOn();
 	}
 
-	public OwnerRentalView getOwnerRentalView() {
-		return new OwnerRentalView(owner, currentHousing);
+	public OwnerBookingView getOwnerRentalView() {
+		return new OwnerBookingView(owner, currentHousing);
 	}
 }

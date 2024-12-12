@@ -9,25 +9,14 @@ import unq.po2.tpFinal.interfaces.Rankeable;
 import unq.po2.tpFinal.interfaces.Ranker;
 
 public class Owner extends User implements Rankeable, Ranker {
-	private List<Ranking> rankings;
-	private List<Booking> bookings;
-	private BookingAcceptanceStrategy bookingAcceptanceStrategy;
-
-	public Owner(String fullName, String email, String phoneNumber, LocalDateTime createdOn,
-			BookingAcceptanceStrategy bookingAcceptanceStrategy) {
-		super(fullName, email, phoneNumber, createdOn);
-		bookings = new ArrayList<Booking>();
+	private List<Ranking> rankings;	
+	private List<Housing> housings;
+	
+	public Owner(String fullName, String email, String phoneNumber, LocalDateTime createdOn) {
+		super(fullName, email, phoneNumber, createdOn);		
 		rankings = new ArrayList<Ranking>();
-		this.bookingAcceptanceStrategy = bookingAcceptanceStrategy;
-	}
-
-	public void addRental(Booking rental) {
-		this.bookings.add(rental);
-	}
-
-	public List<Booking> getRentals() {
-		return this.bookings;
-	}
+		housings = new ArrayList<Housing>();
+	}	
 
 	@Override
 	public void addRanking(Ranking ranking) {
@@ -44,14 +33,11 @@ public class Owner extends User implements Rankeable, Ranker {
 		ranking.getRanked().addRanking(ranking);
 	}
 
-	public void accept(Booking booking) {
-		if (this.bookingAcceptanceStrategy.isAcceptable(booking)) {
-			booking.getHousing().book(booking);
-			this.addRental(booking);
-		}
+	public void approve(Booking booking) {
+		booking.confirm();
 	}
-
-	public void cancelBook(Booking booking) {
-		this.bookings.remove(booking);
+	
+	public List<Housing> getHousings(){
+		return this.housings;
 	}
 }

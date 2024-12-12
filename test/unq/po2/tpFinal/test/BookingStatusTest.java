@@ -13,6 +13,7 @@ import unq.po2.tpFinal.domain.Booking;
 import unq.po2.tpFinal.domain.BookingStatus;
 import unq.po2.tpFinal.domain.DateRange;
 import unq.po2.tpFinal.domain.Housing;
+import unq.po2.tpFinal.interfaces.HousingObserver;
 
 class BookingStatusTest {
 
@@ -86,8 +87,8 @@ class BookingStatusTest {
         bookingStatus.book(bookingMock2, housingMock);
         bookingStatus.cancelBooking(bookingMock1, housingMock);
 
-        assertFalse(bookingStatus.isAvailable(dateRangeMock));
-        verify(housingMock).markAsBooked(bookingMock1);
+        
+        verify(housingMock).addObserver(any(HousingObserver.class));
     }
 
     @Test
