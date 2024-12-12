@@ -57,6 +57,7 @@ class Booking {
     + isBookedOn(date: LocalDate): boolean
     + isBookedOnRange(range: DateRange): boolean
     + cancelBook(): void
+    + confirm() : void
 }
 
 Booking --> "1" Housing : housing
@@ -71,7 +72,8 @@ class BookingStatus {
     + cancelBooking(booking: Booking, housing: Housing): void
 }
 
-BookingStatus --> "*" Booking : bookings
+BookingStatus --> "*" Booking : pendingBookings
+BookingStatus --> "*" Booking : confirmedBooking
 BookingStatus --> "*" Booking : waitlist
 
 abstract class CancellationPolicy {
@@ -79,7 +81,8 @@ abstract class CancellationPolicy {
     + CancellationPolicy(housing: Housing)
     + getHousing(): Housing
     + getCancellationFee(range: DateRange): double
-}
+    + getBookings(): List<Booking>
+    + addPendingBooking(booking:Booking ):void
 
 CancellationPolicy -->"1" Housing : housing
 
@@ -154,6 +157,8 @@ class Housing implements Rankeable {
     + bookingIsCancelled(booking: Booking): void
     + addObserver(observer: HousingObserver): void
     + removeObserver(observer: HousingObserver): void
+    + addPendingBooking(booking: Booking): void
+    + confirmBooking(booking:Booking ):void
 }
 
 Housing --> "1" HousingType :housingType
@@ -190,18 +195,17 @@ class HousingType {
 class Owner extends User implements Rankeable, Ranker{
 
     + Owner(fullName: String, email: String, phoneNumber: String, createdOn: LocalDateTime, bookingAcceptanceStrategy: BookingAcceptanceStrategy)
-    + addRental(rental: Booking): void
-    + getRentals(): List<Booking>
     + addRanking(ranking: Ranking): void
     + getRankings(): List<Ranking>
     + rank(ranking: Ranking): void
-    + accept(booking: Booking): void
+    + approve(booking: Booking): void
     + cancelBook(booking: Booking): void
+    + getHousings():List<Housing>
 }
 
 Owner -->"*" Ranking:rankings
-Owner -->"*" Booking:bookings
-Owner -->"1" BookingAcceptanceStrategy:bookingAcceptanceStrategy
+Owner -->"*" Booking:housings
+
 
 class Picture {
     - name: String
@@ -246,6 +250,7 @@ class Tenant extends User implements Rankeable, Ranker{
     + getRankings(): List<Ranking>
     + rank(ranking: Ranking): void
     + book(housing: Housing, range: DateRange, paymentMethod: PaymentMethod): void
+    + conditionalBook(housing: Housing, range: DateRange, paymentMethod: PaymentMethod): void
 }
 
 Tenant -->"*" Ranking:rankings
@@ -272,6 +277,10 @@ class BookingEmailSender implements HousingObserver {
 }
 
 BookingEmailSender --> "1" EmailSender : emailSender
+
+class EmailSenderImpl implements EmailSender {
+	 sendEmail(to:String , body:String ): void
+}
 
 class Cash  implements PaymentMethod{
     + applyCharge(amount: double): void
@@ -300,8 +309,6 @@ interface PopUpWindow {
     + popUp(message:String , color:String , fontSize:int ) : void
 
 }
-
-
 
 class FreeCancellation extends CancellationPolicy{
     - MAX_DAYS_FOR_FREE_CANCELLATION: int
@@ -426,13 +433,12 @@ class HousingView {
 
 HousingView -->"1" Housing: housing
 
-class OwnerRentalView {
+class OwnerBookingView  {
 
-    + OwnerRentalView(owner: Owner, currentHousing: Housing)
-    + getTotalRentsForHousing(): long
-    + getTotalRentsForAllHousings(): int
-    + getTotalTimesHasRentedCurrentHousing(): long
-    + getRentalsForCurrentHousing(): List<Housing>
+    + getTotalBookingsForHousing(): long
+    + getTotalBookingsForAllHousings(): long
+    + getTotalTimesCurrentHousingWasBooked(): long
+    + getBookingsForCurrentHousing(): List<Booking>
 }
 
 OwnerRentalView -->"1" Owner: owner
@@ -445,7 +451,7 @@ class OwnerView {
     + getAllScores(): List<Integer>
     + getAverageScore(): double
     + getCreatedOn(): LocalDateTime
-    + getOwnerRentalView(): OwnerRentalView
+    + getOwnerRentalView(): OwnerBookingView 
 }
 
 OwnerView -->"1" Owner: owner
