@@ -22,7 +22,7 @@ Admin -->"1" Services :services
 Admin -->"1" BookingSystem :bookingSystem
 Admin -->"*" Housing :housings
 
-class BookingSystem implements HousingObserver{
+class BookingSystem{
 
     + getAllBookings(tenant: Tenant): List<Booking>
     + getAllBookings(): List<Booking>
@@ -31,7 +31,7 @@ class BookingSystem implements HousingObserver{
     + getBookingCities(tenant: Tenant): List<City>
 }
 
-BookingSystem  -->"*"  Booking : confirmedBookings
+BookingSystem  -->"*"  Housing : housings
 
 
 class Address {
@@ -70,6 +70,7 @@ class BookingStatus {
     + isAvailable(range: DateRange): boolean
     + book(booking: Booking, housing: Housing): void
     + cancelBooking(booking: Booking, housing: Housing): void
+    + getBookings() :List<Booking>  
 }
 
 BookingStatus --> "*" Booking : pendingBookings
@@ -395,7 +396,7 @@ class HousingSearchBuilder {
     + build(): HousingSearch
 }
 
-HousingSearchBuilder -->"*" HousingSearchBuilder:filterList
+HousingSearchBuilder -->"*" SearchFilter:filterList
 HousingSearchBuilder -->"1" DateRange: dateRange
 
 class CategoryAverageView {
