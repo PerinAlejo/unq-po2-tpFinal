@@ -388,7 +388,7 @@ class HousingSearchBuilder {
     + build(): HousingSearch
 }
 
-HousingSearchBuilder -->"*" HousingSearchBuilder:filterList
+HousingSearchBuilder -->"*" SearchFilter:filterList
 HousingSearchBuilder -->"1" DateRange: dateRange
 
 class CategoryAverageView {
