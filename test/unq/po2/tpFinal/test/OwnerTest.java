@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import unq.po2.tpFinal.domain.Booking;
+import unq.po2.tpFinal.domain.Housing;
 import unq.po2.tpFinal.domain.Owner;
 import unq.po2.tpFinal.domain.Ranking;
 import unq.po2.tpFinal.interfaces.BookingAcceptanceStrategy;
@@ -15,34 +16,12 @@ import java.util.List;
 public class OwnerTest {
 
 	private Owner owner;
-	private Booking mockBooking;
-	private BookingAcceptanceStrategy mockAcceptanceStrategy;
+	private Booking mockBooking;	
 
 	@BeforeEach
 	public void setUp() {
-
-		mockAcceptanceStrategy = mock(BookingAcceptanceStrategy.class);
 		mockBooking = mock(Booking.class);
-		owner = new Owner("Juanita Perez", "perez@perez.com", "0987654321", LocalDateTime.now(),
-				mockAcceptanceStrategy);
-	}
-
-	@Test
-	public void testAddRental() {
-		owner.addRental(mockBooking);
-		List<Booking> rentals = owner.getRentals();
-
-		assertEquals(1, rentals.size());
-		assertTrue(rentals.contains(mockBooking));
-	}
-
-	@Test
-	public void testGetRentals() {
-		owner.addRental(mockBooking);
-		List<Booking> rentals = owner.getRentals();
-
-		assertEquals(1, rentals.size());
-		assertEquals(mockBooking, rentals.get(0));
+		owner = new Owner("Juanita Perez", "perez@perez.com", "0987654321", LocalDateTime.now());
 	}
 
 	@Test
@@ -79,20 +58,16 @@ public class OwnerTest {
 
 	@Test
 	public void testAcceptBooking() {
-
-		when(mockAcceptanceStrategy.isAcceptable(mockBooking)).thenReturn(true);
-
-		owner.accept(mockBooking);
-
-		verify(mockBooking).acceptBook();
+		Housing mockHousing = mock(Housing.class);
+		when(mockBooking.getHousing()).thenReturn(mockHousing);
+		verify(mockHousing, never()).book(mockBooking);
 	}
 
 	@Test
 	public void testAcceptBookingNotAccepted() {
-		when(mockAcceptanceStrategy.isAcceptable(mockBooking)).thenReturn(false);
-
-		owner.accept(mockBooking);
-
-		verify(mockBooking, never()).acceptBook();
+		Housing mockHousing = mock(Housing.class);
+		when(mockBooking.getHousing()).thenReturn(mockHousing);
+		owner.approve(mockBooking);
+		verify(mockHousing, never()).book(mockBooking);
 	}
 }

@@ -6,7 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import unq.po2.tpFinal.domain.*;
-import unq.po2.tpFinal.interfaces.BookingAcceptedObserver;
+import unq.po2.tpFinal.interfaces.HousingObserver;
 import unq.po2.tpFinal.interfaces.PaymentMethod;
 import unq.po2.tpFinal.interfaces.Ranker;
 
@@ -23,7 +23,7 @@ public class BookingTest {
 	private PaymentMethod mockPaymentMethod;
 	private City mockCity;
 	private Owner mockOwner;
-	private BookingAcceptedObserver mockObserver;
+	private HousingObserver mockObserver;
 
 	@BeforeEach
 	public void setUp() {
@@ -33,7 +33,7 @@ public class BookingTest {
 		mockPaymentMethod = mock(PaymentMethod.class);
 		mockCity = mock(City.class);
 		mockOwner = mock(Owner.class);
-		mockObserver = mock(BookingAcceptedObserver.class);
+		mockObserver = mock(HousingObserver.class);
 
 		when(mockHousing.getOwner()).thenReturn(mockOwner);
 		when(mockHousing.getCity()).thenReturn(mockCity);
@@ -108,29 +108,6 @@ public class BookingTest {
 	}
 
 	@Test
-	public void testAddObserver() {
-		booking.addObserver(mockObserver);
-		booking.acceptBook();
-		verify(mockObserver).notifyBookingAccepted(booking);
-	}
-
-	@Test
-	public void testRemoveObserver() {
-		booking.addObserver(mockObserver);
-		booking.removeObserver(mockObserver);
-		booking.acceptBook();
-		verify(mockObserver, never()).notifyBookingAccepted(booking);
-	}
-
-	@Test
-	public void testAcceptBook() {
-		booking.addObserver(mockObserver);
-
-		booking.acceptBook();
-		verify(mockObserver).notifyBookingAccepted(booking);
-	}
-
-	@Test
 	public void testCancelBook() {
 		double cancellationFee = 100.0;
 		when(mockHousing.getCancelationFee(mockDateRange)).thenReturn(cancellationFee);
@@ -140,8 +117,23 @@ public class BookingTest {
 		booking.cancelBook();
 
 		verify(mockPaymentMethod).applyCharge(cancellationFee);
-		verify(defaultPaymentMethod).applyCharge(cancellationFee);
+		verify(defaultPaymentMethod).applyCharge(cancellationFee);		
+	}
+	
+	@Test
+	public void testIsBookedOnRange() {
+		DateRange anotherDateRange = mock(DateRange.class);
+		LocalDate start = LocalDate.now();
+		LocalDate end = start.plusDays(1);
+		when(anotherDateRange.getStart()).thenReturn(start);
+		when(anotherDateRange.getEnd()).thenReturn(end);
+		when(mockDateRange.contains(start)).thenReturn(false);
+		when(mockDateRange.contains(end)).thenReturn(true);
 
-		verify(mockOwner).cancelBook(booking);
+		assertTrue(booking.isBookedOnRange(anotherDateRange));
+		verify(anotherDateRange).getStart();
+		verify(anotherDateRange).getEnd();
+		verify(mockDateRange).contains(start);
+		verify(mockDateRange).contains(end);
 	}
 }

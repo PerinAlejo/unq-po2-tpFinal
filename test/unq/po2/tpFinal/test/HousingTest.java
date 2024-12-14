@@ -5,8 +5,9 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import unq.po2.tpFinal.*;
+
 import unq.po2.tpFinal.domain.Address;
+import unq.po2.tpFinal.domain.Booking;
 import unq.po2.tpFinal.domain.CancellationPolicy;
 import unq.po2.tpFinal.domain.City;
 import unq.po2.tpFinal.domain.DateRange;
@@ -15,11 +16,15 @@ import unq.po2.tpFinal.domain.HousingStayDetails;
 import unq.po2.tpFinal.domain.HousingType;
 import unq.po2.tpFinal.domain.Owner;
 import unq.po2.tpFinal.domain.Picture;
+import unq.po2.tpFinal.domain.PriceForRange;
 import unq.po2.tpFinal.domain.Ranking;
+import unq.po2.tpFinal.domain.Tenant;
+import unq.po2.tpFinal.interfaces.HousingObserver;
 import unq.po2.tpFinal.interfaces.PaymentMethod;
 import unq.po2.tpFinal.interfaces.PriceCalculatorInterface;
 import unq.po2.tpFinal.interfaces.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -40,7 +45,6 @@ public class HousingTest {
 
 	@BeforeEach
 	public void setUp() {
-		// Inicializar mocks
 		mockHousingType = mock(HousingType.class);
 		mockAddress = mock(Address.class);
 		mockServices = new ArrayList<>();
@@ -52,7 +56,6 @@ public class HousingTest {
 		mockOwner = mock(Owner.class);
 		mockCancellationPolicy = mock(CancellationPolicy.class);
 
-		// Crear una instancia de Housing
 		housing = new Housing(mockHousingType, 100.0f, mockAddress, mockServices, 4, mockPictures, mockStayDetails,
 				mockPaymentMethods, mockPriceCalculator, mockOwner, mockCancellationPolicy);
 	}
@@ -62,7 +65,6 @@ public class HousingTest {
 		DateRange mockDateRange = mock(DateRange.class);
 		double expectedPrice = 200.0;
 
-		// Simular el comportamiento del PriceCalculator
 		when(mockPriceCalculator.getPrice(mockDateRange)).thenReturn(expectedPrice);
 
 		double price = housing.getPrice(mockDateRange);
@@ -133,5 +135,87 @@ public class HousingTest {
 	@Test
 	public void testGetPaymentMethod() {
 		assertEquals(this.mockDefaultPaymentMethod, housing.getDefaultPaymentMethod());
+	}
+
+	@Test
+	public void availabilityChangesAfterBeingBooked() {
+		Booking mockBooking = mock(Booking.class);
+		DateRange range = mock(DateRange.class);
+		when(mockBooking.isBookedOnRange(range)).thenReturn(true);
+		assertEquals(true, housing.isAvailable(range));
+		housing.book(mockBooking);
+		assertEquals(false, housing.isAvailable(range));
+	}
+
+	@Test
+	public void cancelsBook() {
+		Booking mockBooking = mock(Booking.class);
+		DateRange range = mock(DateRange.class);
+		when(mockBooking.isBookedOnRange(range)).thenReturn(true);
+		housing.book(mockBooking);
+		housing.cancelBook(mockBooking);
+		assertEquals(true, housing.isAvailable(range));
+	}
+	
+	@Test
+	public void notifiesObserversOnPriceDrop() {
+		HousingObserver observerMock = mock(HousingObserver.class);
+		housing.addObserver(observerMock);
+		PriceForRange priceForRange = mock(PriceForRange.class);
+		housing.priceDropped(priceForRange);
+		verify(observerMock).notifyPriceDrop(housing, 0.0);
+	}
+	
+	@Test
+	public void notifiesObserverOnBooked() {
+		HousingObserver observerMock = mock(HousingObserver.class);
+		housing.addObserver(observerMock);
+		Booking mockBooking = mock(Booking.class);
+		housing.markAsBooked(mockBooking);
+		verify(observerMock).notifyBookingAccepted(housing, mockBooking);
+	}
+	
+	@Test
+	public void notifiesObserverOnBookingCancelled() {
+		HousingObserver observerMock = mock(HousingObserver.class);
+		housing.addObserver(observerMock);
+		Booking mockBooking = mock(Booking.class);
+		housing.bookingIsCancelled(mockBooking);
+		verify(observerMock).notifyBookingCancelled(housing, mockBooking);
+	}
+	
+	@Test
+	public void removesObserverAndDoesNotNotify() {
+		HousingObserver observerMock = mock(HousingObserver.class);
+		housing.addObserver(observerMock);
+		housing.removeObserver(observerMock);
+		Booking mockBooking = mock(Booking.class);
+		housing.bookingIsCancelled(mockBooking);
+		verify(observerMock, never()).notifyBookingCancelled(housing, mockBooking);
+	}
+	
+	@Test
+	public void returnType() {
+		assertNotNull(housing.getHousingType());
+	}
+	
+	@Test
+	public void returnsBookings() {
+		assertNotNull(housing.getBookings());
+	}
+	
+	@Test 
+	public void confirmsBooking() {
+		Booking mockBooking = mock(Booking.class);
+		Tenant mockTenant = mock(Tenant.class);
+		when(mockTenant.getEmail()).thenReturn("mail@email.com");
+		when(mockBooking.getHousing()).thenReturn(housing);
+		when(mockBooking.getTenant()).thenReturn(mockTenant);
+		HousingObserver mockObserver = mock(HousingObserver.class);
+		housing.addObserver(mockObserver);
+		when(mockBooking.getRange()).thenReturn(new DateRange(LocalDate.now(), 0));
+		housing.addPendingBooking(mockBooking);
+		housing.confirmBooking(mockBooking);
+		verify(mockObserver).notifyBookingAccepted(housing, mockBooking);
 	}
 }

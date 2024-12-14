@@ -12,11 +12,10 @@ public class DateRangeFilter implements SearchFilter {
 	public DateRangeFilter(DateRange dateRange) {
 		this.dateRange = dateRange;
 	}
-	
+
 	@Override
-	public List<Housing> filter(List<Housing> housingList) {
-		
-		return housingList.stream().filter(housing -> housing.isAvailable(this.dateRange)).toList();
+	public boolean matches(Housing housing) {
+		return  housing.isAvailable(this.dateRange);
 	}
 
 }
